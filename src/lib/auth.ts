@@ -18,7 +18,9 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
   pages: { signIn: "/login" },
   providers: [
-    Google, // reads AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET from .env
+    // Safe to link by email: Google only reports verified addresses, and password
+    // accounts here must verify their email before they can log in.
+    Google({ allowDangerousEmailAccountLinking: true }), // reads AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET
     Credentials({
       credentials: { email: {}, password: {} },
       async authorize(raw) {
@@ -27,7 +29,7 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         const user = await prisma.user.findUnique({
           where: { email: parsed.data.email.toLowerCase() },
         });
-        if (!user?.passwordHash) return null;
+        if (!user?.passwordHash || !user.emailVerified) return null; // unverified emails can't log in
         const ok = await bcrypt.compare(parsed.data.password, user.passwordHash);
         if (!ok) return null;
         return { id: user.id, name: user.name, email: user.email, image: user.image, role: user.role };

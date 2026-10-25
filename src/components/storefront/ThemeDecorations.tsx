@@ -3,49 +3,40 @@
 import type { CSSProperties } from "react";
 import type { DecorationKind } from "@/lib/theme";
 
-// A simple, lightweight version: gentle falling shapes, no images, no timers.
-// (Your original ThemeDecorations.jsx wasn't included. Send it and I'll port it
-// over this one.) Positions come from a formula, not Math.random, so the server
-// and browser draw exactly the same thing.
-const GLYPH: Record<DecorationKind, string[]> = {
-  snow: ["❄", "❅", "❆"],
-  hearts: ["♥"],
-  sparkles: ["✦", "✧"],
-  confetti: ["■", "▲", "●"],
+// Ported from your Base44 ThemeDecorations.jsx. Positions come from a formula
+// (no Math.random), so the server and the browser draw the same thing.
+// The `theme-fall` keyframes live in src/app/atelier.css.
+const KINDS: Record<DecorationKind, { glyph: string; colors: string[]; count: number }> = {
+  snow: { glyph: "❅", colors: ["#AFC6DB"], count: 12 },
+  hearts: { glyph: "♥", colors: ["#D98C99", "#C4526A"], count: 8 },
+  sparkles: { glyph: "✦", colors: ["#C9A227", "#9DB8D2"], count: 10 },
+  confetti: { glyph: "●", colors: ["#E4572E", "#F3A712", "#32936F", "#5C80BC"], count: 14 },
 };
-const CONFETTI_COLORS = ["#e63946", "#f4a261", "#2a9d8f", "#457b9d", "#ffd166"];
-const PER_KIND = 14;
 
-export default function ThemeDecorations({ kinds }: { kinds: DecorationKind[] }) {
-  if (!kinds.length) return null;
-
-  const particles = kinds.flatMap((kind) =>
-    Array.from({ length: PER_KIND }, (_, i) => {
-      const glyphs = GLYPH[kind];
-      return {
-        key: `${kind}-${i}`,
-        glyph: glyphs[i % glyphs.length],
-        style: {
-          left: `${(i * 37 + kind.length * 11) % 100}%`,
-          fontSize: `${10 + ((i * 5) % 12)}px`,
-          opacity: 0.35 + ((i * 7) % 5) / 10,
-          animationDuration: `${9 + ((i * 13) % 8)}s`,
-          animationDelay: `-${(i * 0.9) % 9}s`,
-          color: kind === "confetti" ? CONFETTI_COLORS[i % CONFETTI_COLORS.length] : kind === "hearts" ? "#c4526a" : "currentColor",
-        } as CSSProperties,
-      };
-    }),
-  );
+export default function ThemeDecorations({ kinds = [] }: { kinds?: DecorationKind[] }) {
+  const items = kinds.flatMap((kind) => {
+    const cfg = KINDS[kind];
+    if (!cfg) return [];
+    return Array.from({ length: cfg.count }, (_, i) => ({ cfg, i }));
+  });
+  if (!items.length) return null;
 
   return (
-    <div aria-hidden="true" className="atl-deco-layer pointer-events-none fixed inset-0 z-40 overflow-hidden">
-      <style>{`
-        @keyframes atl-fall { from { transform: translateY(-8vh) rotate(0deg); } to { transform: translateY(108vh) rotate(360deg); } }
-        .atl-deco { position: absolute; top: 0; animation: atl-fall linear infinite; }
-        @media (prefers-reduced-motion: reduce) { .atl-deco-layer { display: none; } }
-      `}</style>
-      {particles.map((p) => (
-        <span key={p.key} className="atl-deco" style={p.style}>{p.glyph}</span>
+    <div aria-hidden="true" className="pointer-events-none fixed inset-0 z-[1] overflow-hidden motion-reduce:hidden">
+      {items.map(({ cfg, i }, idx) => (
+        <span
+          key={idx}
+          className="absolute top-0 text-sm"
+          style={
+            {
+              left: `${(idx * 97) % 100}%`,
+              color: cfg.colors[i % cfg.colors.length],
+              animation: `theme-fall ${8 + (i % 6) * 2}s linear -${((i * 1.7) % 12).toFixed(1)}s infinite`,
+            } as CSSProperties
+          }
+        >
+          {cfg.glyph}
+        </span>
       ))}
     </div>
   );

@@ -1,0 +1,24 @@
+
+// ─────────────────────────────────────────────
+// Email codes and password-reset links (added in batch 5)
+// ─────────────────────────────────────────────
+
+enum AuthTokenPurpose {
+  VERIFY_EMAIL
+  RESET_PASSWORD
+}
+
+// Only a keyed hash of the code / link token is stored, never the value itself.
+// `attempts` counts wrong guesses so a 6-digit code can't be brute-forced.
+model AuthToken {
+  id        String           @id @default(cuid())
+  email     String
+  purpose   AuthTokenPurpose
+  tokenHash String
+  attempts  Int              @default(0)
+  expiresAt DateTime
+  createdAt DateTime         @default(now())
+
+  @@index([email, purpose])
+  @@index([tokenHash])
+}

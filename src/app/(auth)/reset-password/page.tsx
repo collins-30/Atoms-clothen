@@ -1,1 +1,13 @@
-export default function Page() { return <main className="p-8">Coming soon</main>; }
+import { Suspense } from "react";
+import type { Metadata } from "next";
+import ResetPasswordForm from "./ResetPasswordForm";
+
+export const metadata: Metadata = { title: "New password" };
+
+export default function Page() {
+  return (
+    <Suspense>
+      <ResetPasswordForm />
+    </Suspense>
+  );
+}

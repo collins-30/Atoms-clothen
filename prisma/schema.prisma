@@ -63,6 +63,11 @@ enum HeaderStyle {
   BORDERED
 }
 
+enum AuthTokenPurpose {
+  VERIFY_EMAIL
+  RESET_PASSWORD
+}
+
 // ─────────────────────────────────────────────
 // Auth.js (Prisma adapter) + User
 // ─────────────────────────────────────────────
@@ -126,6 +131,20 @@ model VerificationToken {
   expires    DateTime
 
   @@unique([identifier, token])
+}
+
+// Used by the storefront auth flow for email verification and password resets.
+model AuthToken {
+  id        String           @id @default(cuid())
+  email     String
+  purpose   AuthTokenPurpose
+  tokenHash String
+  attempts  Int              @default(0)
+  expiresAt DateTime
+  createdAt DateTime         @default(now())
+
+  @@index([email, purpose])
+  @@index([tokenHash])
 }
 
 // Replaces the `addresses` array that lived inside the Base44 User record.
