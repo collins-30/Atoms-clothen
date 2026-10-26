@@ -67,7 +67,7 @@ export function orderEmailHtml(
 
   return `
     <div style="font-family:Helvetica,Arial,sans-serif;max-width:560px;margin:0 auto;background:#F9F9F7;padding:32px;">
-      <p style="font-size:13px;letter-spacing:3px;color:#8a8a8a;margin:0 0 24px;">ATELIER</p>
+      <p style="font-size:13px;letter-spacing:3px;color:#8a8a8a;margin:0 0 24px;">JAMAS</p>
       <h2 style="font-size:20px;color:#1a1a1a;margin:0 0 8px;">${escapeHtml(opts.heading)}</h2>
       <p style="font-size:14px;color:#444;line-height:1.6;margin:0 0 24px;">${escapeHtml(opts.message)}</p>
       <table style="width:100%;border-collapse:collapse;border-top:1px solid #e5e5e5;font-size:13px;">${rows}</table>

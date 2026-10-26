@@ -22,7 +22,7 @@ export async function sendEmail(args: {
   try {
     const resend = new Resend(key);
     const { error } = await resend.emails.send({
-      from: process.env.EMAIL_FROM ?? "Atelier <onboarding@resend.dev>",
+      from: process.env.EMAIL_FROM ?? "JAMAS <onboarding@resend.dev>",
       to: args.to,
       subject: args.subject,
       html: args.html,

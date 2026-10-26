@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 
-export const MARKET_COOKIE = "atelier_market";
+export const MARKET_COOKIE = "JAMAS_market";
 
 type MarketState = {
   code: string;
@@ -23,6 +23,6 @@ export const useMarketStore = create<MarketState>()(
         set({ code });
       },
     }),
-    { name: "atelier_market", partialize: (s) => ({ code: s.code }), skipHydration: true },
+    { name: "JAMAS_market", partialize: (s) => ({ code: s.code }), skipHydration: true },
   ),
 );

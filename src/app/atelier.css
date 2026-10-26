@@ -1,4 +1,4 @@
-/* Atelier palette + fonts, ported from the Base44 index.css.
+/* JAMAS palette + fonts, ported from the Base44 index.css.
    Imported AFTER globals.css, so these win over the shadcn defaults.
    `:root:root` is just a way to be more specific than shadcn's `:root`. */
 

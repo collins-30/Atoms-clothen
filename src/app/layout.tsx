@@ -9,7 +9,7 @@ const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "sw
 const jetbrains = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-jetbrains", display: "swap" });
 
 export const metadata: Metadata = {
-  title: { default: "ATELIER", template: "%s | ATELIER" },
+  title: { default: "JAMAS", template: "%s | JAMAS" },
   description: "Considered clothing, made to last.",
 };
 

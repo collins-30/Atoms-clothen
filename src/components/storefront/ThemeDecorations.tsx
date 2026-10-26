@@ -5,7 +5,7 @@ import type { DecorationKind } from "@/lib/theme";
 
 // Ported from your Base44 ThemeDecorations.jsx. Positions come from a formula
 // (no Math.random), so the server and the browser draw the same thing.
-// The `theme-fall` keyframes live in src/app/atelier.css.
+// The `theme-fall` keyframes live in src/app/JAMAS.css.
 const KINDS: Record<DecorationKind, { glyph: string; colors: string[]; count: number }> = {
   snow: { glyph: "❅", colors: ["#AFC6DB"], count: 12 },
   hearts: { glyph: "♥", colors: ["#D98C99", "#C4526A"], count: 8 },

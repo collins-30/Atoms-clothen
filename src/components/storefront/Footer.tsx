@@ -52,7 +52,7 @@ export default function Footer() {
     <footer className="bg-foreground text-background mt-24">
       <div className="max-w-[1600px] mx-auto px-4 md:px-8 py-16 grid grid-cols-1 md:grid-cols-2 gap-12 border-b border-white/10">
         <div className="max-w-md">
-          <h3 className="text-2xl font-bold tracking-[0.2em]" style={{ fontFamily: "var(--font-heading)" }}>ATELIER</h3>
+          <h3 className="text-2xl font-bold tracking-[0.2em]" style={{ fontFamily: "var(--font-heading)" }}>JAMAS</h3>
           <p className="mt-4 text-sm text-white/60 leading-relaxed">
             Considered essentials and seasonal statements, made to last. Join the list for early access to new collections.
           </p>
@@ -92,7 +92,7 @@ export default function Footer() {
         </div>
       </div>
       <div className="max-w-[1600px] mx-auto px-4 md:px-8 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
-        <p className="text-xs text-white/40">© {new Date().getFullYear()} Atelier. All rights reserved.</p>
+        <p className="text-xs text-white/40">© {new Date().getFullYear()} JAMAS. All rights reserved.</p>
         <div className="flex gap-5">
           <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram"><InstagramIcon className="text-white/70 hover:text-white" /></a>
           <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook"><FacebookIcon className="text-white/70 hover:text-white" /></a>

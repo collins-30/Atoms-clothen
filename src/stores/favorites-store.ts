@@ -15,6 +15,6 @@ export const useFavoritesStore = create<FavoritesState>()(
           slugs: s.slugs.includes(slug) ? s.slugs.filter((x) => x !== slug) : [...s.slugs, slug],
         })),
     }),
-    { name: "atelier_wishlist", partialize: (s) => ({ slugs: s.slugs }), skipHydration: true },
+    { name: "JAMAS_wishlist", partialize: (s) => ({ slugs: s.slugs }), skipHydration: true },
   ),
 );

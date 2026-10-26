@@ -3,11 +3,11 @@ import { sendEmail, type SendResult } from "./send";
 const escapeHtml = (s: string) =>
   s.replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
 
-// Same look as your order emails (ATELIER header, off-white card).
+// Same look as your order emails (JAMAS header, off-white card).
 function shell(heading: string, inner: string) {
   return `
     <div style="font-family:Helvetica,Arial,sans-serif;max-width:560px;margin:0 auto;background:#F9F9F7;padding:32px;">
-      <p style="font-size:13px;letter-spacing:3px;color:#8a8a8a;margin:0 0 24px;">ATELIER</p>
+      <p style="font-size:13px;letter-spacing:3px;color:#8a8a8a;margin:0 0 24px;">JAMAS</p>
       <h2 style="font-size:20px;color:#1a1a1a;margin:0 0 8px;">${escapeHtml(heading)}</h2>
       ${inner}
     </div>`;
@@ -26,7 +26,7 @@ export async function sendVerificationCodeEmail(to: string, code: string): Promi
   devEcho("verification code", to, code);
   return sendEmail({
     to,
-    subject: `${code} is your Atelier verification code`,
+    subject: `${code} is your JAMAS verification code`,
     html: shell(
       "Verify your email",
       `<p style="font-size:14px;color:#444;line-height:1.6;margin:0 0 20px;">Enter this code to finish creating your account. It expires in 15 minutes.</p>
@@ -40,7 +40,7 @@ export async function sendPasswordResetEmail(to: string, link: string): Promise<
   devEcho("password reset link", to, link);
   return sendEmail({
     to,
-    subject: "Reset your Atelier password",
+    subject: "Reset your JAMAS password",
     html: shell(
       "Reset your password",
       `<p style="font-size:14px;color:#444;line-height:1.6;margin:0 0 20px;">Click the button below to choose a new password. The link works once and expires in 1 hour.</p>

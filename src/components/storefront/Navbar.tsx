@@ -76,7 +76,7 @@ export default function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
             className="absolute left-1/2 -translate-x-1/2 text-xl md:text-2xl font-bold tracking-[0.3em] text-foreground"
             style={{ fontFamily: "var(--font-heading)" }}
           >
-            ATELIER
+            JAMAS
           </Link>
 
           <div className="flex items-center gap-4 md:gap-5">
@@ -135,7 +135,7 @@ export default function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
       {menuOpen && (
         <div className="fixed inset-0 z-[60] bg-background md:hidden flex flex-col">
           <div className="h-16 flex items-center justify-between px-4 border-b border-border">
-            <span className="text-xl font-bold tracking-[0.3em] text-foreground" style={{ fontFamily: "var(--font-heading)" }}>ATELIER</span>
+            <span className="text-xl font-bold tracking-[0.3em] text-foreground" style={{ fontFamily: "var(--font-heading)" }}>JAMAS</span>
             <button onClick={() => setMenuOpen(false)} aria-label="Close menu"><X className="w-5 h-5 text-foreground" /></button>
           </div>
           <div className="flex-1 flex flex-col px-6 py-8 gap-1">

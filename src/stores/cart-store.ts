@@ -54,6 +54,6 @@ export const useCartStore = create<CartState>()(
       clear: () => set({ items: [] }),
       setOpen: (open) => set({ open }),
     }),
-    { name: "atelier_cart", partialize: (s) => ({ items: s.items }), skipHydration: true },
+    { name: "JAMAS_cart", partialize: (s) => ({ items: s.items }), skipHydration: true },
   ),
 );

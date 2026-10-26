@@ -49,7 +49,7 @@ export default function HomeView({ banners }: { banners: StoreBanner[] }) {
       <section className="relative h-[78vh] md:h-[92vh] -mt-16 overflow-hidden">
         <Image
           src={heroBanner?.image || HERO}
-          alt={heroBanner?.title || "Atelier seasonal campaign"}
+          alt={heroBanner?.title || "JAMAS seasonal campaign"}
           fill
           priority
           sizes="100vw"
@@ -102,10 +102,10 @@ export default function HomeView({ banners }: { banners: StoreBanner[] }) {
       {/* Editorial split */}
       <section className="max-w-[1600px] mx-auto px-4 md:px-8 py-14 md:py-20 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
         <div className="relative aspect-[4/5] bg-stone-100 overflow-hidden">
-          <Image src={BANNER} alt="Atelier craftsmanship" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+          <Image src={BANNER} alt="JAMAS craftsmanship" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
         </div>
         <div className="md:pl-8">
-          <p className="text-xs tracking-[0.3em] uppercase text-stone-500 mb-4">The Atelier Standard</p>
+          <p className="text-xs tracking-[0.3em] uppercase text-stone-500 mb-4">The JAMAS Standard</p>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight" style={{ fontFamily: "var(--font-heading)" }}>
             Considered design, responsible materials.
           </h2>
