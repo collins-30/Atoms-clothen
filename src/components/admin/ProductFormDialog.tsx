@@ -5,6 +5,7 @@ import { Loader2, Plus } from "lucide-react";
 import type { Gender, ProductStatus } from "@prisma/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ghostBtn, inputCls, labelCls, primaryBtn } from "@/components/admin/AdminUi";
+import ImageUploadButton from "@/components/admin/ImageUploadButton";
 import { saveProduct, type AdminCategoryLite, type AdminMarketLite, type AdminProduct } from "@/server/admin-products";
 
 const GENDERS: Gender[] = ["WOMEN", "MEN", "UNISEX"];
@@ -248,7 +249,10 @@ export default function ProductFormDialog({
                 <Plus className="w-3.5 h-3.5" /> Add
               </button>
             </div>
-            <p className="text-xs text-stone-400 mt-1.5">The first image is the main one. Uploading files will come with image storage.</p>
+            <div className="mt-2">
+              <ImageUploadButton folder="products" multiple label="Upload images" onUploaded={(url) => setImages((imgs) => [...imgs, url])} />
+            </div>
+            <p className="text-xs text-stone-400 mt-1.5">The first image is the main one. Upload files, or paste a link or a path like /products/dress.jpg.</p>
           </div>
 
           <div>

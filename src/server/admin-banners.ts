@@ -1,6 +1,7 @@
 "use server";
 
 import { z } from "zod";
+import { IMAGE_LINK_ERROR, isAllowedImageUrl } from "@/lib/image-url";
 import { connection } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
@@ -8,7 +9,7 @@ import type { AdminResult } from "@/server/admin-categories";
 
 export type AdminBanner = {
   id: string;
-  type: "HERO" | "PROMO";
+  type: "HERO" | "PROMO" | "CRAFT";
   title: string;
   subtitle: string;
   image: string;
@@ -40,10 +41,10 @@ const localOrHttps = (v: string) => v === "" || (v.startsWith("/") && !v.startsW
 
 const schema = z.object({
   id: z.string().min(1).optional(),
-  type: z.enum(["HERO", "PROMO"]),
+  type: z.enum(["HERO", "PROMO", "CRAFT"]),
   title: z.string().trim().min(1, "Title is required.").max(120),
-  subtitle: z.string().trim().max(200),
-  image: z.string().trim().max(2000).refine(localOrHttps, "Image links must start with / or https://"),
+  subtitle: z.string().trim().max(190, "Subtitle can be at most 190 characters."),
+  image: z.string().trim().max(2000).refine((v) => v === "" || isAllowedImageUrl(v), IMAGE_LINK_ERROR),
   buttonText: z.string().trim().max(40),
   link: z.string().trim().max(500).refine(localOrHttps, "Links must start with / (a page of this store) or https://"),
   active: z.boolean(),

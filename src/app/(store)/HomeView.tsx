@@ -34,6 +34,7 @@ export default function HomeView({ banners }: { banners: StoreBanner[] }) {
 
   const heroBanner = banners.find((b) => b.type === "hero");
   const promoBanner = banners.find((b) => b.type === "promo");
+  const craftBanner = banners.find((b) => b.type === "craft");
 
   const newArrivals = products.filter((p) => p.isNew).slice(0, 4);
   const trending = products.filter((p) => p.isTrending).slice(0, 4);
@@ -102,17 +103,19 @@ export default function HomeView({ banners }: { banners: StoreBanner[] }) {
       {/* Editorial split */}
       <section className="max-w-[1600px] mx-auto px-4 md:px-8 py-14 md:py-20 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
         <div className="relative aspect-[4/5] bg-stone-100 overflow-hidden">
-          <Image src={BANNER} alt="JAMAS craftsmanship" fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+          {craftBanner?.image && (
+            <Image src={craftBanner.image} alt={craftBanner.title} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+          )}
         </div>
         <div className="md:pl-8">
           <p className="text-xs tracking-[0.3em] uppercase text-stone-500 mb-4">The JAMAS Standard</p>
           <h2 className="text-3xl md:text-5xl font-bold tracking-tight leading-tight" style={{ fontFamily: "var(--font-heading)" }}>
-            Considered design, responsible materials.
+            {craftBanner?.title || "Considered design, responsible materials."}
           </h2>
           <p className="mt-6 text-stone-600 leading-relaxed max-w-md">
-            Every piece is cut from natural fibres and finished by partners who share our standard for craft and traceability. Made in limited runs, made to last.
+            {craftBanner?.subtitle || "Every piece is cut from natural fibres and finished by partners who share our standard for craft and traceability. Made in limited runs, made to last."}
           </p>
-          <Link href="/about" className="mt-8 inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase border-b border-foreground pb-1">Read our story <ArrowRight className="w-3.5 h-3.5" /></Link>
+          <Link href={craftBanner?.link || "/about"} className="mt-8 inline-flex items-center gap-2 text-xs tracking-[0.2em] uppercase border-b border-foreground pb-1">{craftBanner?.buttonText || "Read our story"} <ArrowRight className="w-3.5 h-3.5" /></Link>
         </div>
       </section>
 

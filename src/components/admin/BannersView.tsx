@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ghostBtn, inputCls, labelCls, NoticeBar, primaryBtn, type Notice } from "@/components/admin/AdminUi";
+import ImageUploadButton from "@/components/admin/ImageUploadButton";
 import { deleteBanner, saveBanner, setBannerActive, type AdminBanner } from "@/server/admin-banners";
 
 type Draft = Omit<AdminBanner, "id" | "displayOrder"> & { id?: string; displayOrder: string };
@@ -98,12 +99,12 @@ export default function BannersView({ banners }: { banners: AdminBanner[] }) {
       {notice && <div className="mb-4"><NoticeBar notice={notice} /></div>}
 
       {banners.length === 0 && <p className="text-sm text-stone-400 border border-stone-200 py-16 text-center">No banners yet.</p>}
-      {(["HERO", "PROMO"] as const).map((t) => {
+      {(["HERO", "PROMO", "CRAFT"] as const).map((t) => {
         const group = banners.filter((b) => b.type === t);
         if (group.length === 0) return null;
         return (
           <div key={t} className="mb-8">
-            <p className="text-[10px] tracking-[0.2em] uppercase text-stone-400 mb-2">{t === "HERO" ? "Hero (main banner)" : "Promotional banners"}</p>
+            <p className="text-[10px] tracking-[0.2em] uppercase text-stone-400 mb-2">{t === "HERO" ? "Hero (main banner)" : t === "CRAFT" ? "Craftsmanship section" : "Promotional banners"}</p>
             <div className="divide-y divide-stone-200 border-y border-stone-200">{group.map(row)}</div>
           </div>
         );
@@ -125,6 +126,7 @@ export default function BannersView({ banners }: { banners: AdminBanner[] }) {
                     <select id="b-type" value={draft.type} onChange={(e) => setDraft({ ...draft, type: e.target.value as Draft["type"] })} className={inputCls}>
                       <option value="HERO">Hero (main banner)</option>
                       <option value="PROMO">Promotional banner</option>
+                      <option value="CRAFT">Craftsmanship section</option>
                     </select>
                   </div>
                   <div>
@@ -132,6 +134,11 @@ export default function BannersView({ banners }: { banners: AdminBanner[] }) {
                     <input id="b-order" type="number" min="0" value={draft.displayOrder} onChange={(e) => setDraft({ ...draft, displayOrder: e.target.value })} className={inputCls} />
                   </div>
                 </div>
+                {draft.type === "CRAFT" && (
+                  <p className="text-xs text-stone-500 bg-stone-100 px-3 py-2">
+                    This is the &ldquo;The JAMAS Standard&rdquo; block lower down the homepage. Title is the heading, Subtitle is the paragraph under it (up to 190 characters), and the button defaults to &ldquo;Read our story&rdquo; if left blank.
+                  </p>
+                )}
                 <div>
                   <label htmlFor="b-title" className={labelCls}>Title *</label>
                   <input id="b-title" value={draft.title} onChange={(e) => setDraft({ ...draft, title: e.target.value })} className={inputCls} placeholder="Form, in its purest state." />
@@ -151,7 +158,9 @@ export default function BannersView({ banners }: { banners: AdminBanner[] }) {
                     </div>
                     <input id="b-img" value={draft.image} onChange={(e) => setDraft({ ...draft, image: e.target.value })} className={inputCls} />
                   </div>
-                  <p className="text-xs text-stone-400 mt-1.5">Uploading files will come with image storage.</p>
+                  <div className="mt-2">
+                    <ImageUploadButton folder="banners" onUploaded={(url) => setDraft((d) => (d ? { ...d, image: url } : d))} />
+                  </div>
                 </div>
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>

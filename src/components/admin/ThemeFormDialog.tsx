@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ghostBtn, inputCls, labelCls, primaryBtn } from "@/components/admin/AdminUi";
+import ImageUploadButton from "@/components/admin/ImageUploadButton";
 import { saveTheme, type AdminTheme } from "@/server/admin-themes";
 
 const COLORS = [
@@ -166,6 +167,7 @@ export default function ThemeFormDialog({
           <div className="space-y-2">
             <p className={labelCls}>Seasonal banner (optional)</p>
             <input value={form.bannerImage} onChange={(e) => set("bannerImage", e.target.value)} placeholder="Banner image link or /path" aria-label="Banner image" className={inputCls} />
+            <ImageUploadButton folder="themes" onUploaded={(url) => set("bannerImage", url)} />
             <div className="grid grid-cols-2 gap-3">
               <input value={form.bannerHeading} onChange={(e) => set("bannerHeading", e.target.value)} placeholder="Heading" aria-label="Banner heading" className={inputCls} />
               <input value={form.bannerSubheading} onChange={(e) => set("bannerSubheading", e.target.value)} placeholder="Subheading" aria-label="Banner subheading" className={inputCls} />

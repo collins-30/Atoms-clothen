@@ -11,7 +11,7 @@ export async function getActiveBanners(): Promise<StoreBanner[]> {
   });
   return rows.map((b) => ({
     id: b.id,
-    type: b.type === "HERO" ? "hero" : "promo",
+    type: b.type === "HERO" ? "hero" : b.type === "CRAFT" ? "craft" : "promo",
     title: b.title,
     subtitle: b.subtitle,
     image: b.image,

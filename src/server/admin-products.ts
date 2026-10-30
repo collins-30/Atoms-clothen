@@ -2,6 +2,7 @@
 
 import type { Gender, ProductStatus } from "@prisma/client";
 import { z } from "zod";
+import { IMAGE_LINK_ERROR, isAllowedImageUrl } from "@/lib/image-url";
 import { connection } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
@@ -109,7 +110,7 @@ const imageUrl = z
   .string()
   .trim()
   .max(2000)
-  .refine((v) => (v.startsWith("/") && !v.startsWith("//")) || v.startsWith("https://"), "Image links must start with / or https://");
+  .refine(isAllowedImageUrl, IMAGE_LINK_ERROR);
 
 const productSchema = z.object({
   id: z.string().min(1).optional(),

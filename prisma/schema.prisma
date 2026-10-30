@@ -55,6 +55,7 @@ enum DiscountType {
 enum BannerType {
   HERO
   PROMO
+  CRAFT
 }
 
 enum HeaderStyle {

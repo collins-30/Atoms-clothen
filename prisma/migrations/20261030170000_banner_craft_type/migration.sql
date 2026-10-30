@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `Banner` MODIFY `type` ENUM('HERO', 'PROMO', 'CRAFT') NOT NULL DEFAULT 'PROMO';

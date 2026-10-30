@@ -29,7 +29,7 @@ export type Catalog = {
 
 export type StoreBanner = {
   id: string;
-  type: "hero" | "promo";
+  type: "hero" | "promo" | "craft";
   title: string;
   subtitle: string | null;
   image: string | null;

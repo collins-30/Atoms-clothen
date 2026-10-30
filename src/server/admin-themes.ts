@@ -1,6 +1,7 @@
 "use server";
 
 import { z } from "zod";
+import { IMAGE_LINK_ERROR, isAllowedImageUrl } from "@/lib/image-url";
 import { connection } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
@@ -88,7 +89,7 @@ const schema = z.object({
   headerStyle: z.enum(["DEFAULT", "TINTED", "BORDERED"]),
   announcementEnabled: z.boolean(),
   announcementText: z.string().trim().max(200),
-  bannerImage: z.string().trim().max(2000).refine(localOrHttps, "Image links must start with / or https://"),
+  bannerImage: z.string().trim().max(2000).refine((v) => v === "" || isAllowedImageUrl(v), IMAGE_LINK_ERROR),
   bannerHeading: z.string().trim().max(120),
   bannerSubheading: z.string().trim().max(200),
   bannerLink: z.string().trim().max(500).refine(localOrHttps, "Links must start with / or https://"),
