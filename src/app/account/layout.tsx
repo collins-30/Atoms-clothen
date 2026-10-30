@@ -5,6 +5,7 @@ import { connection } from "next/server";
 import { LogOut } from "lucide-react";
 import { auth, signOut } from "@/lib/auth";
 import AccountTabs from "@/components/account/AccountTabs";
+import { displayNameFor } from "@/server/account-data";
 
 // Account pages need a signed-in customer. (Each account query must also filter
 // by the signed-in user's id; this layout only decides who gets to see the page.)
@@ -13,7 +14,7 @@ async function AccountGate({ children }: { children: ReactNode }) {
   const session = await auth();
   if (!session?.user?.id) redirect("/login?returnTo=/account");
 
-  const firstName = (session.user.name ?? "").split(" ")[0] || "there";
+  const firstName = (await displayNameFor(session.user.id)).split(" ")[0] || "there";
   const isAdmin = session.user.role === "ADMIN";
 
   // Replaces useAuth().logout(true)

@@ -19,6 +19,7 @@ async function currentUserId(): Promise<string | null> {
 // ── Contact details ─────────────────────────────────────────
 
 const detailsSchema = z.object({
+  name: z.string().trim().max(120, "That name is too long."),
   phone: z.string().trim().max(40, "That phone number is too long."),
   dateOfBirth: z.string().trim(),
   emailMarketing: z.boolean(),
@@ -45,7 +46,7 @@ export async function saveDetails(raw: unknown): Promise<ActionResult> {
 
   await prisma.user.update({
     where: { id: userId },
-    data: { phone: parsed.data.phone || null, dateOfBirth: dob, emailMarketing: parsed.data.emailMarketing },
+    data: { name: parsed.data.name || null, phone: parsed.data.phone || null, dateOfBirth: dob, emailMarketing: parsed.data.emailMarketing },
   });
   return { ok: true };
 }

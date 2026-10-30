@@ -151,7 +151,7 @@ export default function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
               </Link>
             ))}
             <div className="mt-6 flex items-center justify-between">
-              <MarketSelector />
+              <MarketSelector align="left" />
               <div className="flex gap-6">
                 {isAdmin && <Link href="/admin" onClick={() => setMenuOpen(false)} className="text-sm text-foreground">Admin</Link>}
                 <Link href="/account" onClick={() => setMenuOpen(false)} className="text-sm text-foreground">Account</Link>

@@ -24,8 +24,27 @@ const escapeHtml = (s: string) =>
 
 /** Guests gave an email at checkout; fall back to the account email. */
 export function orderRecipient(order: OrderForEmail): string | null {
-  return order.shipEmail || order.user?.email || null;
+  // Lower-case: some orders were saved with capitals, and Resend compares addresses exactly.
+  const to = (order.shipEmail || order.user?.email || "").trim().toLowerCase();
+  return to || null;
 }
+
+const appUrl = () => process.env.NEXT_PUBLIC_APP_URL?.replace(/\/$/, "") || null;
+
+function shipToHtml(order: OrderForEmail): string {
+  const cityLine = [order.shipCity, order.shipRegion, order.shipPostalCode].filter(Boolean).join(", ");
+  const lines = [order.shipFullName, order.shipLine1, order.shipLine2, cityLine, order.shipCountry, order.shipPhone]
+    .filter((l): l is string => Boolean(l && l.trim()))
+    .map((l) => escapeHtml(l));
+  return lines.join("<br>");
+}
+
+const section = (label: string, body: string) => `
+      <p style="font-size:11px;letter-spacing:2px;text-transform:uppercase;color:#8a8a8a;margin:24px 0 6px;">${label}</p>
+      <p style="font-size:13px;color:#1a1a1a;line-height:1.6;margin:0;">${body}</p>`;
+
+const button = (label: string, href: string) => `
+      <p style="margin:28px 0 0;"><a href="${escapeHtml(href)}" style="display:inline-block;background:#1a1a1a;color:#F9F9F7;text-decoration:none;font-size:12px;letter-spacing:2px;text-transform:uppercase;padding:14px 28px;">${escapeHtml(label)}</a></p>`;
 
 /**
  * Your Base44 shared/orderEmail.ts, same look. Differences: values are
@@ -34,7 +53,7 @@ export function orderRecipient(order: OrderForEmail): string | null {
  */
 export function orderEmailHtml(
   order: OrderForEmail,
-  opts: { heading: string; message: string },
+  opts: { heading: string; message: string; button?: { label: string; href: string }; footer?: string; extra?: string },
 ): string {
   const sym = escapeHtml(order.currencySymbol || "");
   const money = (v: number | string | Prisma.Decimal) => `${sym}${Number(v).toFixed(2)}`;
@@ -73,8 +92,17 @@ export function orderEmailHtml(
       <table style="width:100%;border-collapse:collapse;border-top:1px solid #e5e5e5;font-size:13px;">${rows}</table>
       ${totalRows.length ? `<table style="width:100%;border-collapse:collapse;margin-top:8px;">${totalRows.join("")}</table>` : ""}
       <p style="font-size:14px;color:#1a1a1a;margin:16px 0 0;text-align:right;"><strong>Total: ${money(order.total)}</strong></p>
-      <p style="font-size:12px;color:#8a8a8a;margin-top:32px;">You can follow your order's progress in your account.</p>
+      ${opts.extra ?? ""}
+      ${section("Ship to", shipToHtml(order))}
+      ${order.trackingNumber ? section("Tracking", `${order.carrier ? escapeHtml(order.carrier) + " &middot; " : ""}${escapeHtml(order.trackingNumber)}`) : ""}
+      ${opts.button ? button(opts.button.label, opts.button.href) : ""}
+      <p style="font-size:12px;color:#8a8a8a;margin-top:32px;">${escapeHtml(opts.footer ?? "You can follow your order's progress in your account.")}</p>
     </div>`;
+}
+
+function viewOrderButton(order: OrderForEmail) {
+  const base = appUrl();
+  return base ? { label: "View your order", href: `${base}/account/orders/${order.id}` } : undefined;
 }
 
 export function sendOrderConfirmationEmail(order: OrderForEmail): Promise<SendResult> {
@@ -87,6 +115,7 @@ export function sendOrderConfirmationEmail(order: OrderForEmail): Promise<SendRe
       heading: `Order ${order.orderNumber}: confirmed`,
       message:
         "Thank you for your order. We have received your payment and your order is confirmed — it is now being prepared.",
+      button: viewOrderButton(order),
     }),
   });
 }
@@ -103,6 +132,42 @@ export function sendOrderStatusEmail(
     html: orderEmailHtml(order, {
       heading: `Order ${order.orderNumber}: ${status}`,
       message: STATUS_MESSAGES[status] ?? "Your order status has been updated.",
+      button: viewOrderButton(order),
     }),
   });
+}
+
+/**
+ * Tells the store owner a new paid order came in. Recipients come from
+ * ADMIN_NOTIFY_EMAIL (one address, or several separated by commas). If it is
+ * not set, nothing is sent. Never throws.
+ */
+export async function sendAdminNewOrderEmail(order: OrderForEmail): Promise<SendResult> {
+  const recipients = (process.env.ADMIN_NOTIFY_EMAIL ?? "")
+    .split(",")
+    .map((e) => e.trim())
+    .filter(Boolean);
+  if (recipients.length === 0) return { ok: false, error: "ADMIN_NOTIFY_EMAIL not set" };
+
+  const base = appUrl();
+  const sym = order.currencySymbol || "";
+  const customer = [order.shipFullName, order.shipEmail || order.user?.email, order.shipPhone]
+    .filter((v): v is string => Boolean(v && v.trim()))
+    .map((v) => escapeHtml(v))
+    .join("<br>");
+  const html = orderEmailHtml(order, {
+    heading: `New order ${order.orderNumber}`,
+    message: `A customer has paid ${sym}${Number(order.total).toFixed(2)}${order.discountCode ? ` (code ${order.discountCode})` : ""}. The order is confirmed and ready to be prepared.`,
+    extra: section("Customer", customer),
+    button: base ? { label: "Open orders in admin", href: `${base}/admin/orders` } : undefined,
+    footer: "You are receiving this because this address is set as the store's order notification email.",
+  });
+
+  const subject = `New order ${order.orderNumber} (${sym}${Number(order.total).toFixed(2)})`;
+  let failed: SendResult | null = null;
+  for (const to of recipients) {
+    const res = await sendEmail({ to, subject, html }); // one at a time: Resend rate-limits bursts
+    if (!res.ok) failed = res;
+  }
+  return failed ?? { ok: true };
 }

@@ -15,7 +15,7 @@ export const checkoutSchema = z.object({
     )
     .min(1, "Your bag is empty")
     .max(50),
-  customer: z.object({ email: z.string().trim().email("Enter a valid email") }),
+  customer: z.object({ email: z.string().trim().toLowerCase().email("Enter a valid email") }),
   shippingAddress: z.object({
     fullName: z.string().trim().min(1, "Full name is required").max(120),
     phone: z.string().trim().max(40).optional(),

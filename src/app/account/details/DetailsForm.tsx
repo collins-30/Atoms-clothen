@@ -70,6 +70,7 @@ export default function DetailsForm({ profile, addresses }: { profile: ProfileDa
   const router = useRouter();
 
   const [form, setForm] = useState({
+    name: profile.name,
     phone: profile.phone,
     dateOfBirth: profile.dateOfBirth,
     emailMarketing: profile.emailMarketing,
@@ -106,7 +107,7 @@ export default function DetailsForm({ profile, addresses }: { profile: ProfileDa
 
   const openAdd = () => {
     setAddrError("");
-    setDraft({ ...EMPTY_ADDR, fullName: profile.name, phone: form.phone });
+    setDraft({ ...EMPTY_ADDR, fullName: form.name, phone: form.phone });
   };
   const openEdit = (a: AddressData) => {
     setAddrError("");
@@ -162,8 +163,14 @@ export default function DetailsForm({ profile, addresses }: { profile: ProfileDa
       <div className="border border-stone-200 p-6 md:p-8">
         <div className="grid sm:grid-cols-2 gap-5">
           <div className="space-y-1.5">
-            <p className={labelClass}>Full name</p>
-            <p className="text-sm text-[#1a1a1a] py-2">{profile.name || "—"}</p>
+            <Label htmlFor="full-name" className={labelClass}>Full name</Label>
+            <Input
+              id="full-name"
+              autoComplete="name"
+              value={form.name}
+              onChange={(e) => setForm({ ...form, name: e.target.value })}
+              className={inputClass}
+            />
           </div>
           <div className="space-y-1.5">
             <p className={labelClass}>Email</p>
@@ -192,7 +199,7 @@ export default function DetailsForm({ profile, addresses }: { profile: ProfileDa
             />
           </div>
         </div>
-        <p className="text-xs text-stone-400 mt-4">To change your name or email, contact support.</p>
+        <p className="text-xs text-stone-400 mt-4">To change your email, contact support.</p>
         <div className="flex items-center gap-2.5 mt-6">
           <Checkbox
             id="marketing"

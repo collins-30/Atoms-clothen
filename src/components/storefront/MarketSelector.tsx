@@ -4,7 +4,9 @@ import { useEffect, useRef, useState } from "react";
 import { Check, ChevronDown } from "lucide-react";
 import { useStore } from "@/lib/store-context";
 
-export default function MarketSelector({ dark = false }: { dark?: boolean }) {
+// align: which edge of the button the menu lines up with. Use "left" when the button sits
+// at the left of the screen (the mobile menu), or the menu would run off-screen.
+export default function MarketSelector({ dark = false, align = "right" }: { dark?: boolean; align?: "left" | "right" }) {
   const { markets, market, setMarketCode } = useStore();
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
@@ -37,7 +39,7 @@ export default function MarketSelector({ dark = false }: { dark?: boolean }) {
         <ChevronDown className="w-3 h-3" />
       </button>
       {open && (
-        <div className="absolute right-0 top-full mt-2 w-56 bg-background border border-stone-200 shadow-xl py-1 z-50">
+        <div className={`absolute ${align === "left" ? "left-0" : "right-0"} top-full mt-2 w-56 max-w-[calc(100vw-3rem)] bg-background border border-stone-200 shadow-xl py-1 z-50`}>
           <p className="px-4 py-2 text-[10px] tracking-[0.2em] uppercase text-stone-400">Ship to</p>
           {markets.map((m) => (
             <button

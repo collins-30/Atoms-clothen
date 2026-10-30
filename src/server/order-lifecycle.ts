@@ -4,7 +4,7 @@
 
 import type { Prisma } from "@prisma/client";
 import { prisma } from "@/lib/db";
-import { sendOrderConfirmationEmail } from "@/lib/email/order-emails";
+import { sendAdminNewOrderEmail, sendOrderConfirmationEmail } from "@/lib/email/order-emails";
 
 /** Put an order's reserved stock back on the shelf. Call inside a transaction. */
 export async function restockOrder(tx: Prisma.TransactionClient, orderId: string) {
@@ -67,7 +67,23 @@ export async function markOrderPaid(args: {
     where: { id: orderId },
     include: { items: true, user: { select: { email: true } } },
   });
-  await sendOrderConfirmationEmail(order); // never throws; logs its own errors
+  // Neither of these throws; each logs its own errors. One after the other,
+  // because Resend allows only a couple of requests per second.
+  await sendOrderConfirmationEmail(order);
+  await sendAdminNewOrderEmail(order);
+
+  // Sign-up only asks for an email and password, so use the name and phone typed at
+  // checkout for an account that has none yet. Never lets a failure here break the webhook.
+  if (order.userId) {
+    try {
+      await prisma.user.updateMany({ where: { id: order.userId, OR: [{ name: null }, { name: "" }] }, data: { name: order.shipFullName } });
+      if (order.shipPhone) {
+        await prisma.user.updateMany({ where: { id: order.userId, OR: [{ phone: null }, { phone: "" }] }, data: { phone: order.shipPhone } });
+      }
+    } catch (e) {
+      console.error("[payments] could not fill in the customer's name:", e);
+    }
+  }
   return { changed: true };
 }
 

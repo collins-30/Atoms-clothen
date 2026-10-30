@@ -2,9 +2,12 @@
 // callable from the browser. Every query filters by the signed-in user's id.
 
 import { redirect } from "next/navigation";
+import { connection } from "next/server";
 import { auth } from "@/lib/auth";
+import { prisma } from "@/lib/db";
 
 export async function requireUserId(returnTo = "/account"): Promise<string> {
+  await connection(); // render on every request: required before anything using crypto/random in Next 16
   const session = await auth();
   if (!session?.user?.id) redirect(`/login?returnTo=${encodeURIComponent(returnTo)}`);
   return session.user.id;
@@ -37,4 +40,19 @@ export function fmtDate(d: Date, style: "short" | "long" = "short"): string {
 export function itemsSummary(items: { name: string }[]): string {
   if (items.length === 0) return "";
   return items[0].name + (items.length > 1 ? ` +${items.length - 1} more` : "");
+}
+
+/**
+ * The name to greet the customer with. Accounts created with just an email and
+ * password have no name yet, so fall back to the name on their latest paid order.
+ */
+export async function displayNameFor(userId: string): Promise<string> {
+  const user = await prisma.user.findUnique({ where: { id: userId }, select: { name: true } });
+  if (user?.name?.trim()) return user.name.trim();
+  const last = await prisma.order.findFirst({
+    where: { userId, ...PLACED_ORDERS },
+    orderBy: { createdAt: "desc" },
+    select: { shipFullName: true },
+  });
+  return last?.shipFullName?.trim() ?? "";
 }
