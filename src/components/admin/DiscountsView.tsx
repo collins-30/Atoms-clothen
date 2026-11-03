@@ -111,7 +111,7 @@ export default function DiscountsView({ discounts }: { discounts: AdminDiscount[
         <div className="divide-y divide-stone-200 border-y border-stone-200">
           {discounts.map((d) => (
             <div key={d.id} className="flex flex-wrap items-center gap-4 py-4">
-              <span className="font-mono text-sm text-[#1a1a1a] w-32">{d.code}</span>
+              <span className="font-mono text-sm text-foreground w-32">{d.code}</span>
               <span className="text-sm text-stone-600 w-28">
                 {amount(d)}
                 <span className="text-xs text-stone-400"> off</span>
@@ -122,7 +122,7 @@ export default function DiscountsView({ discounts }: { discounts: AdminDiscount[
                 {STATE_LABEL[d.state]}
               </button>
               <div className="flex items-center gap-4 ml-auto">
-                <button onClick={() => open(d)} className="text-xs text-stone-500 hover:text-[#1a1a1a] inline-flex items-center gap-1">
+                <button onClick={() => open(d)} className="text-xs text-stone-500 hover:text-foreground inline-flex items-center gap-1">
                   <Pencil className="w-3 h-3" /> Edit
                 </button>
                 <button onClick={() => remove(d)} className="text-stone-300 hover:text-rose-700" aria-label={`Delete ${d.code}`}>
@@ -135,11 +135,11 @@ export default function DiscountsView({ discounts }: { discounts: AdminDiscount[
       )}
 
       <Dialog open={!!draft} onOpenChange={(o) => { if (!o) setDraft(null); }}>
-        <DialogContent className="sm:max-w-md rounded-none bg-[#F9F9F7]">
+        <DialogContent className="sm:max-w-md rounded-none bg-background">
           {draft && (
             <>
               <DialogHeader>
-                <DialogTitle className="text-sm tracking-[0.2em] uppercase text-[#1a1a1a]" style={{ fontFamily: "var(--font-heading)" }}>
+                <DialogTitle className="text-sm tracking-[0.2em] uppercase text-foreground" style={{ fontFamily: "var(--font-heading)" }}>
                   {draft.id ? "Edit discount" : "New discount"}
                 </DialogTitle>
               </DialogHeader>
@@ -181,7 +181,7 @@ export default function DiscountsView({ discounts }: { discounts: AdminDiscount[
                   </div>
                 </div>
                 <label className="flex items-center gap-2 text-sm text-stone-600 cursor-pointer">
-                  <input type="checkbox" checked={draft.active} onChange={(e) => setDraft({ ...draft, active: e.target.checked })} className="size-4 accent-[#1a1a1a]" />
+                  <input type="checkbox" checked={draft.active} onChange={(e) => setDraft({ ...draft, active: e.target.checked })} className="size-4 accent-primary" />
                   Active
                 </label>
                 {formError && <p className="text-sm text-rose-700">{formError}</p>}

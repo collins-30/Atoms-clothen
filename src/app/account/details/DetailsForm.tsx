@@ -159,7 +159,7 @@ export default function DetailsForm({ profile, addresses }: { profile: ProfileDa
         </p>
       )}
 
-      <h2 className="text-sm tracking-[0.2em] uppercase text-[#1a1a1a] mb-6">Contact details</h2>
+      <h2 className="text-sm tracking-[0.2em] uppercase text-foreground mb-6">Contact details</h2>
       <div className="border border-stone-200 p-6 md:p-8">
         <div className="grid sm:grid-cols-2 gap-5">
           <div className="space-y-1.5">
@@ -174,7 +174,7 @@ export default function DetailsForm({ profile, addresses }: { profile: ProfileDa
           </div>
           <div className="space-y-1.5">
             <p className={labelClass}>Email</p>
-            <p className="text-sm text-[#1a1a1a] py-2">{profile.email}</p>
+            <p className="text-sm text-foreground py-2">{profile.email}</p>
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="phone" className={labelClass}>Phone</Label>
@@ -214,7 +214,7 @@ export default function DetailsForm({ profile, addresses }: { profile: ProfileDa
         <Button
           onClick={submitDetails}
           disabled={saving}
-          className="mt-8 bg-[#1a1a1a] text-[#F9F9F7] hover:bg-[#333] rounded-none px-8 text-xs tracking-[0.15em] uppercase"
+          className="mt-8 bg-primary text-primary-foreground hover:bg-primary/85 rounded-none px-8 text-xs tracking-[0.15em] uppercase"
         >
           {saving && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
           Save changes
@@ -223,8 +223,8 @@ export default function DetailsForm({ profile, addresses }: { profile: ProfileDa
 
       <div className="mt-14">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-sm tracking-[0.2em] uppercase text-[#1a1a1a]">Address book</h2>
-          <button onClick={openAdd} className="inline-flex items-center gap-1.5 text-xs tracking-[0.15em] uppercase text-[#1a1a1a] hover:opacity-60">
+          <h2 className="text-sm tracking-[0.2em] uppercase text-foreground">Address book</h2>
+          <button onClick={openAdd} className="inline-flex items-center gap-1.5 text-xs tracking-[0.15em] uppercase text-foreground hover:opacity-60">
             <Plus className="w-3.5 h-3.5" /> Add address
           </button>
         </div>
@@ -244,7 +244,7 @@ export default function DetailsForm({ profile, addresses }: { profile: ProfileDa
                   )}
                 </div>
                 <div className="text-sm text-stone-600 leading-relaxed">
-                  <p className="text-[#1a1a1a]">{a.fullName}</p>
+                  <p className="text-foreground">{a.fullName}</p>
                   <p>
                     {a.line1}
                     {a.line2 ? `, ${a.line2}` : ""}
@@ -254,7 +254,7 @@ export default function DetailsForm({ profile, addresses }: { profile: ProfileDa
                   {a.phone && <p>{a.phone}</p>}
                 </div>
                 <div className="flex gap-4 mt-4">
-                  <button onClick={() => openEdit(a)} className="inline-flex items-center gap-1 text-xs text-stone-500 hover:text-[#1a1a1a]">
+                  <button onClick={() => openEdit(a)} className="inline-flex items-center gap-1 text-xs text-stone-500 hover:text-foreground">
                     <Pencil className="w-3 h-3" /> Edit
                   </button>
                   <button onClick={() => removeAddress(a.id)} className="inline-flex items-center gap-1 text-xs text-stone-500 hover:text-rose-700">
@@ -273,9 +273,9 @@ export default function DetailsForm({ profile, addresses }: { profile: ProfileDa
           if (!open) setDraft(null);
         }}
       >
-        <DialogContent className="sm:max-w-lg rounded-none bg-[#F9F9F7]">
+        <DialogContent className="sm:max-w-lg rounded-none bg-background">
           <DialogHeader>
-            <DialogTitle className="text-sm tracking-[0.2em] uppercase text-[#1a1a1a]" style={{ fontFamily: "var(--font-heading)" }}>
+            <DialogTitle className="text-sm tracking-[0.2em] uppercase text-foreground" style={{ fontFamily: "var(--font-heading)" }}>
               {draft?.id ? "Edit address" : "Add address"}
             </DialogTitle>
           </DialogHeader>
@@ -313,7 +313,7 @@ export default function DetailsForm({ profile, addresses }: { profile: ProfileDa
                 <Button
                   onClick={submitAddress}
                   disabled={savingAddr}
-                  className="bg-[#1a1a1a] text-[#F9F9F7] hover:bg-[#333] rounded-none px-8 text-xs tracking-[0.15em] uppercase"
+                  className="bg-primary text-primary-foreground hover:bg-primary/85 rounded-none px-8 text-xs tracking-[0.15em] uppercase"
                 >
                   {savingAddr && <Loader2 className="w-4 h-4 mr-2 animate-spin" />}
                   Save address

@@ -450,3 +450,13 @@ model NewsletterSubscriber {
   email     String   @unique
   createdAt DateTime @default(now())
 }
+
+// Counters behind the rate limits (wrong-password attempts, emails sent, ...).
+// One row per bucket; a row whose resetAt has passed starts a fresh window.
+model RateLimit {
+  bucket  String   @id @db.VarChar(191)
+  hits    Int      @default(0)
+  resetAt DateTime
+
+  @@index([resetAt])
+}

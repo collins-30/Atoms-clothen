@@ -43,7 +43,7 @@ export default async function AccountOverviewPage() {
         {stats.map((s, i) => (
           <div key={s.label} className={i > 0 ? "border-l border-stone-200 pl-4 md:pl-8" : ""}>
             <p className="text-[10px] tracking-[0.2em] uppercase text-stone-400">{s.label}</p>
-            <p className="text-2xl md:text-3xl font-semibold text-[#1a1a1a] mt-1" style={{ fontFamily: "var(--font-heading)" }}>
+            <p className="text-2xl md:text-3xl font-semibold text-foreground mt-1" style={{ fontFamily: "var(--font-heading)" }}>
               {s.value}
             </p>
           </div>
@@ -52,9 +52,9 @@ export default async function AccountOverviewPage() {
 
       <div className="mt-12">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-sm tracking-[0.2em] uppercase text-[#1a1a1a]">Recent orders</h2>
+          <h2 className="text-sm tracking-[0.2em] uppercase text-foreground">Recent orders</h2>
           {total > 0 && (
-            <Link href="/account/orders" className="inline-flex items-center gap-1 text-xs tracking-[0.15em] uppercase text-stone-500 hover:text-[#1a1a1a]">
+            <Link href="/account/orders" className="inline-flex items-center gap-1 text-xs tracking-[0.15em] uppercase text-stone-500 hover:text-foreground">
               View all <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           )}
@@ -63,7 +63,7 @@ export default async function AccountOverviewPage() {
         {recent.length === 0 ? (
           <div className="border border-stone-200 py-16 text-center">
             <p className="text-stone-500 mb-6">Your orders will appear here once you place your first one.</p>
-            <Link href="/shop" className="inline-flex items-center gap-2 text-xs tracking-[0.15em] uppercase border border-[#1a1a1a] px-6 py-3 text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-[#F9F9F7] transition-colors">
+            <Link href="/shop" className="inline-flex items-center gap-2 text-xs tracking-[0.15em] uppercase border border-foreground px-6 py-3 text-foreground hover:bg-foreground hover:text-background transition-colors">
               Continue shopping <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -76,13 +76,13 @@ export default async function AccountOverviewPage() {
                 className="flex items-center justify-between gap-4 py-4 hover:bg-stone-50 transition-colors px-2 -mx-2"
               >
                 <div className="min-w-0">
-                  <p className="text-sm font-medium text-[#1a1a1a]">{o.orderNumber}</p>
+                  <p className="text-sm font-medium text-foreground">{o.orderNumber}</p>
                   <p className="text-xs text-stone-500 mt-0.5">
                     {fmtDate(o.createdAt)} · {itemsSummary(o.items)}
                   </p>
                 </div>
                 <div className="flex items-center gap-4 shrink-0">
-                  <span className="text-sm text-[#1a1a1a] hidden sm:block">{fmtMoney(o.total, o.currencySymbol)}</span>
+                  <span className="text-sm text-foreground hidden sm:block">{fmtMoney(o.total, o.currencySymbol)}</span>
                   <OrderStatusBadge status={o.status} />
                   <ChevronRight className="w-4 h-4 text-stone-300" />
                 </div>
@@ -93,7 +93,7 @@ export default async function AccountOverviewPage() {
       </div>
 
       <div className="mt-12 border-t border-stone-200 pt-8">
-        <Link href="/account/details" className="inline-flex items-center gap-2 text-xs tracking-[0.15em] uppercase text-stone-500 hover:text-[#1a1a1a]">
+        <Link href="/account/details" className="inline-flex items-center gap-2 text-xs tracking-[0.15em] uppercase text-stone-500 hover:text-foreground">
           Manage personal details <ArrowRight className="w-3.5 h-3.5" />
         </Link>
       </div>

@@ -46,7 +46,7 @@ export default function CustomersView({ customers }: { customers: AdminCustomer[
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search name or email…"
           aria-label="Search customers"
-          className="h-9 px-3 text-sm bg-transparent border border-stone-300 rounded-none outline-none focus:border-[#1a1a1a] sm:w-64"
+          className="h-9 px-3 text-sm bg-transparent border border-stone-300 rounded-none outline-none focus:border-foreground sm:w-64"
         />
       </div>
       {notice && <div className="mb-4"><NoticeBar notice={notice} /></div>}
@@ -58,14 +58,14 @@ export default function CustomersView({ customers }: { customers: AdminCustomer[
           {visible.map((c) => (
             <div key={c.id} className="flex flex-wrap items-center gap-4 py-4">
               <div className="flex-1 min-w-[200px]">
-                <p className="text-sm font-medium text-[#1a1a1a]">{c.name || "—"}{c.isSelf && <span className="ml-2 text-[10px] tracking-[0.15em] uppercase text-stone-400">you</span>}</p>
+                <p className="text-sm font-medium text-foreground">{c.name || "—"}{c.isSelf && <span className="ml-2 text-[10px] tracking-[0.15em] uppercase text-stone-400">you</span>}</p>
                 <p className="text-xs text-stone-500">{c.email}</p>
               </div>
               <span className="text-xs text-stone-500 min-w-[100px]">{c.phone || "—"}</span>
               <span className="text-xs text-stone-500 min-w-[90px]">{c.country || "—"}</span>
               <span className="text-xs text-stone-500">Joined {c.joinedLabel}</span>
               <span className="text-xs text-stone-500 w-16">{c.orders} order{c.orders === 1 ? "" : "s"}</span>
-              <span className="text-xs text-[#1a1a1a] w-28 text-right">{c.spend}</span>
+              <span className="text-xs text-foreground w-28 text-right">{c.spend}</span>
               {busyId === c.id ? (
                 <span className="w-28 inline-flex"><Loader2 className="w-4 h-4 animate-spin text-stone-400" /></span>
               ) : (
@@ -75,7 +75,7 @@ export default function CustomersView({ customers }: { customers: AdminCustomer[
                   onChange={(e) => changeRole(c, e.target.value as "USER" | "ADMIN")}
                   aria-label={`Role for ${c.email}`}
                   title={c.isSelf ? "You can't change your own role" : undefined}
-                  className="h-8 w-28 px-2 text-xs bg-transparent border border-stone-300 rounded-none outline-none focus:border-[#1a1a1a] disabled:opacity-50"
+                  className="h-8 w-28 px-2 text-xs bg-transparent border border-stone-300 rounded-none outline-none focus:border-foreground disabled:opacity-50"
                 >
                   <option value="USER">Customer</option>
                   <option value="ADMIN">Admin</option>

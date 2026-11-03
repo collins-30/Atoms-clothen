@@ -66,7 +66,7 @@ export default function CategoriesView({ categories }: { categories: AdminCatego
 
   const row = (c: AdminCategory, child = false) => (
     <div key={c.id} className={`flex flex-wrap items-center gap-4 py-3 ${child ? "pl-8" : ""}`}>
-      <span className="text-sm text-[#1a1a1a] flex-1 min-w-[140px]">
+      <span className="text-sm text-foreground flex-1 min-w-[140px]">
         {child && <span className="text-stone-300 mr-2">↳</span>}
         {c.name}
       </span>
@@ -77,7 +77,7 @@ export default function CategoriesView({ categories }: { categories: AdminCatego
       </span>
       <span className="text-xs text-stone-400 w-8 text-right">#{c.displayOrder}</span>
       <div className="flex items-center gap-4">
-        <button onClick={() => open(c)} className="text-xs text-stone-500 hover:text-[#1a1a1a] inline-flex items-center gap-1">
+        <button onClick={() => open(c)} className="text-xs text-stone-500 hover:text-foreground inline-flex items-center gap-1">
           <Pencil className="w-3 h-3" /> Edit
         </button>
         <button onClick={() => remove(c)} className="text-stone-300 hover:text-rose-700" aria-label={`Delete ${c.name}`}>
@@ -123,11 +123,11 @@ export default function CategoriesView({ categories }: { categories: AdminCatego
       })}
 
       <Dialog open={!!draft} onOpenChange={(o) => { if (!o) setDraft(null); }}>
-        <DialogContent className="sm:max-w-md rounded-none bg-[#F9F9F7]">
+        <DialogContent className="sm:max-w-md rounded-none bg-background">
           {draft && (
             <>
               <DialogHeader>
-                <DialogTitle className="text-sm tracking-[0.2em] uppercase text-[#1a1a1a]" style={{ fontFamily: "var(--font-heading)" }}>
+                <DialogTitle className="text-sm tracking-[0.2em] uppercase text-foreground" style={{ fontFamily: "var(--font-heading)" }}>
                   {draft.id ? "Edit category" : "New category"}
                 </DialogTitle>
               </DialogHeader>
@@ -166,7 +166,7 @@ export default function CategoriesView({ categories }: { categories: AdminCatego
                     <input id="cat-order" type="number" min="0" value={draft.displayOrder} onChange={(e) => setDraft({ ...draft, displayOrder: e.target.value })} className={inputCls} />
                   </div>
                   <label className="flex items-center gap-2 pt-6 text-sm text-stone-600 cursor-pointer">
-                    <input type="checkbox" checked={draft.active} onChange={(e) => setDraft({ ...draft, active: e.target.checked })} className="size-4 accent-[#1a1a1a]" />
+                    <input type="checkbox" checked={draft.active} onChange={(e) => setDraft({ ...draft, active: e.target.checked })} className="size-4 accent-primary" />
                     Active
                   </label>
                 </div>

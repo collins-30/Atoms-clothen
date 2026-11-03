@@ -14,7 +14,7 @@ import { saveOrderTracking, type AdminOrder } from "@/server/admin-orders-data";
 type Notice = { tone: "ok" | "error"; text: string } | null;
 
 const fieldCls =
-  "h-9 px-3 text-sm bg-transparent border border-stone-300 rounded-none outline-none focus:border-[#1a1a1a]";
+  "h-9 px-3 text-sm bg-transparent border border-stone-300 rounded-none outline-none focus:border-foreground";
 
 function StatusSelect({
   value,
@@ -30,7 +30,7 @@ function StatusSelect({
       value={value}
       disabled={disabled}
       onChange={(e) => onChange(e.target.value as OrderStatus)}
-      className="h-8 w-[130px] px-2 text-xs bg-transparent border border-stone-300 rounded-none outline-none focus:border-[#1a1a1a] disabled:opacity-50"
+      className="h-8 w-[130px] px-2 text-xs bg-transparent border border-stone-300 rounded-none outline-none focus:border-foreground disabled:opacity-50"
       aria-label="Order status"
     >
       {ORDER_STATUSES.map((s) => (
@@ -91,7 +91,7 @@ function TrackingForm({ order, onSaved }: { order: AdminOrder; onSaved: (n: Noti
       <button
         onClick={save}
         disabled={saving || unchanged}
-        className="mt-2 h-9 px-5 text-xs tracking-[0.15em] uppercase border border-stone-300 hover:border-[#1a1a1a] disabled:opacity-40 disabled:hover:border-stone-300 inline-flex items-center gap-2"
+        className="mt-2 h-9 px-5 text-xs tracking-[0.15em] uppercase border border-stone-300 hover:border-foreground disabled:opacity-40 disabled:hover:border-stone-300 inline-flex items-center gap-2"
       >
         {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
         Save tracking
@@ -124,7 +124,7 @@ function OrderDetail({
           <div className="divide-y divide-stone-100 border-y border-stone-100">
             {order.items.map((it, i) => (
               <div key={i} className="flex justify-between gap-3 py-2.5 text-sm">
-                <span className="text-[#1a1a1a]">
+                <span className="text-foreground">
                   {it.name}{" "}
                   <span className="text-stone-400">
                     × {it.qty}
@@ -249,8 +249,8 @@ export default function AdminOrdersView({ orders }: { orders: AdminOrder[] }) {
                 onClick={() => setFilter(f)}
                 className={`px-3 py-1.5 text-[10px] tracking-[0.15em] uppercase whitespace-nowrap border transition-colors ${
                   filter === f
-                    ? "border-[#1a1a1a] bg-[#1a1a1a] text-[#F9F9F7]"
-                    : "border-stone-200 text-stone-500 hover:border-[#1a1a1a] hover:text-[#1a1a1a]"
+                    ? "border-foreground bg-foreground text-background"
+                    : "border-stone-200 text-stone-500 hover:border-foreground hover:text-foreground"
                 }`}
               >
                 {f === "all" ? "All" : ORDER_STATUS_LABELS[f]} ({count})
@@ -262,7 +262,7 @@ export default function AdminOrdersView({ orders }: { orders: AdminOrder[] }) {
           value={q}
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search order # or customer…"
-          className="h-9 px-3 text-sm bg-transparent border border-stone-300 rounded-none outline-none focus:border-[#1a1a1a] md:w-64"
+          className="h-9 px-3 text-sm bg-transparent border border-stone-300 rounded-none outline-none focus:border-foreground md:w-64"
           aria-label="Search orders"
         />
       </div>
@@ -282,11 +282,11 @@ export default function AdminOrdersView({ orders }: { orders: AdminOrder[] }) {
           {visible.map((o) => (
             <div key={o.id} className="flex flex-wrap items-center gap-3 py-4">
               <button onClick={() => setSelectedId(o.id)} className="text-left min-w-[150px]">
-                <p className="text-sm font-medium text-[#1a1a1a] hover:underline">{o.orderNumber}</p>
+                <p className="text-sm font-medium text-foreground hover:underline">{o.orderNumber}</p>
                 <p className="text-xs text-stone-500">{o.createdLabel}</p>
               </button>
               <p className="text-xs text-stone-500 flex-1 min-w-[160px] truncate">{o.customerEmail ?? "—"}</p>
-              <span className="text-sm text-[#1a1a1a] w-28 text-right">{fmtMoney(o.total, o.currencySymbol)}</span>
+              <span className="text-sm text-foreground w-28 text-right">{fmtMoney(o.total, o.currencySymbol)}</span>
               <span className={`text-[10px] tracking-[0.15em] uppercase ${o.paymentStatus === "PAID" ? "text-emerald-800" : "text-stone-400"}`}>
                 {o.paymentStatus.toLowerCase()}
               </span>
@@ -304,11 +304,11 @@ export default function AdminOrdersView({ orders }: { orders: AdminOrder[] }) {
       )}
 
       <Dialog open={!!selected} onOpenChange={(open) => { if (!open) setSelectedId(null); }}>
-        <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto rounded-none bg-[#F9F9F7]">
+        <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto rounded-none bg-background">
           {selected && (
             <>
               <DialogHeader>
-                <DialogTitle className="text-lg text-[#1a1a1a]" style={{ fontFamily: "var(--font-heading)" }}>
+                <DialogTitle className="text-lg text-foreground" style={{ fontFamily: "var(--font-heading)" }}>
                   {selected.orderNumber}
                   <span className="ml-3 align-middle">
                     <OrderStatusBadge status={selected.status} />

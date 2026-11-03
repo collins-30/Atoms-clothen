@@ -12,7 +12,7 @@ import { deleteProduct, type AdminProduct, type ProductsData } from "@/server/ad
 
 const chip = (on: boolean) =>
   `px-3 py-1.5 text-[10px] tracking-[0.15em] uppercase border transition-colors ${
-    on ? "border-[#1a1a1a] bg-[#1a1a1a] text-[#F9F9F7]" : "border-stone-200 text-stone-500 hover:border-[#1a1a1a] hover:text-[#1a1a1a]"
+    on ? "border-foreground bg-foreground text-background" : "border-stone-200 text-stone-500 hover:border-foreground hover:text-foreground"
   }`;
 
 const STATUS_STYLE = {
@@ -68,7 +68,7 @@ export default function ProductsView({ products, categories, markets }: Products
           onChange={(e) => setQ(e.target.value)}
           placeholder="Search products…"
           aria-label="Search products"
-          className="h-9 px-3 text-sm bg-transparent border border-stone-300 rounded-none outline-none focus:border-[#1a1a1a] md:w-64 md:ml-auto"
+          className="h-9 px-3 text-sm bg-transparent border border-stone-300 rounded-none outline-none focus:border-foreground md:w-64 md:ml-auto"
         />
         <button onClick={() => setEditor({ product: null })} className={primaryBtn}>
           <Plus className="w-4 h-4" /> New product
@@ -94,19 +94,19 @@ export default function ProductsView({ products, categories, markets }: Products
                   )}
                 </div>
                 <div className="flex-1 min-w-[180px]">
-                  <p className="text-sm font-medium text-[#1a1a1a] truncate">{p.name}</p>
+                  <p className="text-sm font-medium text-foreground truncate">{p.name}</p>
                   <p className="text-xs text-stone-500 truncate">
                     {p.categoryName ?? "no category"} · {p.gender.toLowerCase()} · {p.slug} · {marketCodes(p)}
                   </p>
                 </div>
-                {market && price && <span className="text-sm text-[#1a1a1a] w-24 text-right">{fmtMoney(price.price, market.symbol)}</span>}
+                {market && price && <span className="text-sm text-foreground w-24 text-right">{fmtMoney(price.price, market.symbol)}</span>}
                 <span className={`text-[10px] tracking-[0.15em] uppercase px-2 py-1 ${STATUS_STYLE[p.status]}`}>{p.status.toLowerCase()}</span>
                 <span className={`text-sm w-20 text-right ${p.stock < 10 ? "text-amber-700" : "text-stone-600"}`}>{p.stock} pcs</span>
                 <div className="flex items-center gap-4">
-                  <button onClick={() => setEditor({ product: p })} className="text-xs text-stone-500 hover:text-[#1a1a1a] inline-flex items-center gap-1">
+                  <button onClick={() => setEditor({ product: p })} className="text-xs text-stone-500 hover:text-foreground inline-flex items-center gap-1">
                     <Pencil className="w-3 h-3" /> Edit
                   </button>
-                  <button onClick={() => setStockFor(p)} className="text-xs text-stone-500 hover:text-[#1a1a1a] inline-flex items-center gap-1">
+                  <button onClick={() => setStockFor(p)} className="text-xs text-stone-500 hover:text-foreground inline-flex items-center gap-1">
                     <Boxes className="w-3 h-3" /> Stock
                   </button>
                   <button onClick={() => remove(p)} className="text-stone-300 hover:text-rose-700" aria-label={`Delete ${p.name}`}>

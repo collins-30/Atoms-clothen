@@ -46,7 +46,7 @@ export default function ProductCard({ product, priceMap, market }: Props) {
         className="absolute right-3 top-3 p-1.5 bg-background/80 rounded-full backdrop-blur hover:scale-110 transition-transform"
         aria-label={wished ? "Remove from favorites" : "Add to favorites"}
       >
-        <Heart className={`w-4 h-4 ${wished ? "fill-[#1a1a1a] text-foreground" : "text-foreground"}`} strokeWidth={1.4} />
+        <Heart className={`w-4 h-4 ${wished ? "fill-foreground text-foreground" : "text-foreground"}`} strokeWidth={1.4} />
       </button>
       <div className="mt-3 flex justify-between gap-3">
         <div className="min-w-0">

@@ -120,9 +120,9 @@ export default function ProductStockDialog({
 
   return (
     <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
-      <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto rounded-none bg-[#F9F9F7]">
+      <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto rounded-none bg-background">
         <DialogHeader>
-          <DialogTitle className="text-sm tracking-[0.2em] uppercase text-[#1a1a1a]" style={{ fontFamily: "var(--font-heading)" }}>
+          <DialogTitle className="text-sm tracking-[0.2em] uppercase text-foreground" style={{ fontFamily: "var(--font-heading)" }}>
             Stock · {product.name}
           </DialogTitle>
         </DialogHeader>
@@ -155,7 +155,7 @@ export default function ProductStockDialog({
                   <div className="divide-y divide-stone-100 border-y border-stone-100">
                     {list.map((v) => (
                       <div key={v.id} className="flex items-center gap-4 py-2.5">
-                        <span className="text-sm text-[#1a1a1a] w-16">Size {v.size}</span>
+                        <span className="text-sm text-foreground w-16">Size {v.size}</span>
                         <span className="text-xs text-stone-400 font-mono flex-1 truncate">{v.sku}</span>
                         <input
                           type="number"
@@ -164,7 +164,7 @@ export default function ProductStockDialog({
                           value={v.stockText}
                           onChange={(e) => setStock(v.id, e.target.value)}
                           aria-label={`Stock for ${v.color} ${v.size}`}
-                          className="w-20 h-8 px-2 text-sm text-right bg-transparent border border-stone-300 rounded-none outline-none focus:border-[#1a1a1a]"
+                          className="w-20 h-8 px-2 text-sm text-right bg-transparent border border-stone-300 rounded-none outline-none focus:border-foreground"
                         />
                         <button onClick={() => remove(v)} className="text-stone-300 hover:text-rose-700" aria-label={`Delete ${v.color} ${v.size}`}>
                           <Trash2 className="w-3.5 h-3.5" />
@@ -179,7 +179,7 @@ export default function ProductStockDialog({
               <button
                 onClick={generate}
                 disabled={generating || !canGenerate}
-                className="h-10 px-5 border border-stone-300 text-xs tracking-[0.15em] uppercase hover:border-[#1a1a1a] disabled:opacity-50 inline-flex items-center gap-2"
+                className="h-10 px-5 border border-stone-300 text-xs tracking-[0.15em] uppercase hover:border-foreground disabled:opacity-50 inline-flex items-center gap-2"
               >
                 {generating ? <Loader2 className="w-4 h-4 animate-spin" /> : <Sparkles className="w-4 h-4" />}
                 Generate missing

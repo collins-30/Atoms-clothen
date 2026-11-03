@@ -111,7 +111,7 @@ export default function CartDrawer() {
               ) : (
                 <p className="text-xs text-stone-500">Shipping &amp; taxes calculated at checkout.</p>
               )}
-              <Link href="/cart" onClick={() => setCartOpen(false)} className="w-full h-12 bg-foreground text-background text-xs tracking-[0.2em] uppercase flex items-center justify-center hover:bg-[#2D5A27] transition-colors">
+              <Link href="/cart" onClick={() => setCartOpen(false)} className="w-full h-12 bg-foreground text-background text-xs tracking-[0.2em] uppercase flex items-center justify-center hover:bg-[var(--success)] hover:text-background transition-colors">
                 View Bag &amp; Checkout
               </Link>
             </div>

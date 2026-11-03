@@ -67,7 +67,7 @@ export default function CartPage() {
       {cart.length === 0 ? (
         <div className="py-24 text-center">
           <p className="text-stone-500 mb-6">Your bag is empty.</p>
-          <Link href="/shop" className="inline-flex items-center gap-2 h-12 px-8 bg-foreground text-background text-xs tracking-[0.2em] uppercase hover:bg-[#2D5A27]">
+          <Link href="/shop" className="inline-flex items-center gap-2 h-12 px-8 bg-foreground text-background text-xs tracking-[0.2em] uppercase hover:bg-[var(--success)] hover:text-background">
             Start shopping <ArrowRight className="w-3.5 h-3.5" />
           </Link>
         </div>
@@ -117,7 +117,7 @@ export default function CartPage() {
                 <div className="pt-3 border-t border-stone-200 flex justify-between text-base font-medium"><span>Total</span><span className="font-mono">{money(total)}</span></div>
               </div>
               {quoteError && <p className="mt-4 text-xs text-destructive">{quoteError}</p>}
-              <Link href="/checkout" className="mt-6 w-full h-12 flex items-center justify-center bg-foreground text-background text-xs tracking-[0.2em] uppercase hover:bg-[#2D5A27] transition-colors">
+              <Link href="/checkout" className="mt-6 w-full h-12 flex items-center justify-center bg-foreground text-background text-xs tracking-[0.2em] uppercase hover:bg-[var(--success)] hover:text-background transition-colors">
                 Proceed to checkout
               </Link>
               <Link href="/shop" className="mt-4 block text-center text-xs text-stone-500 underline hover:text-foreground">Continue shopping</Link>

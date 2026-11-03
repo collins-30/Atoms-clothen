@@ -115,7 +115,7 @@ export default function ShopView() {
         <input type="number" value={maxPrice} onChange={(e) => setMaxPrice(e.target.value)} placeholder="No limit" className="w-full border-b border-stone-300 bg-transparent py-1 text-sm outline-none focus:border-foreground" />
       </div>
       <label className="flex items-center gap-2 text-sm text-stone-600 cursor-pointer">
-        <input type="checkbox" checked={inStockOnly} onChange={(e) => setInStockOnly(e.target.checked)} className="accent-[#1a1a1a]" />
+        <input type="checkbox" checked={inStockOnly} onChange={(e) => setInStockOnly(e.target.checked)} className="accent-primary" />
         In stock only
       </label>
     </div>

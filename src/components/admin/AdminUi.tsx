@@ -1,12 +1,12 @@
 // Small shared pieces for the admin forms (no hooks, so server and client files can both use them).
 
 export const inputCls =
-  "h-10 w-full px-3 text-sm bg-transparent border border-stone-300 rounded-none outline-none focus:border-[#1a1a1a] disabled:opacity-50";
+  "h-10 w-full px-3 text-sm bg-transparent border border-stone-300 rounded-none outline-none focus:border-foreground disabled:opacity-50";
 export const labelCls = "block text-[10px] tracking-[0.15em] uppercase text-stone-500 mb-1.5";
 export const primaryBtn =
-  "h-10 px-8 bg-[#1a1a1a] text-[#F9F9F7] hover:bg-[#333] text-xs tracking-[0.15em] uppercase disabled:opacity-60 inline-flex items-center justify-center gap-2 transition-colors";
+  "h-10 px-8 bg-primary text-primary-foreground hover:bg-primary/85 text-xs tracking-[0.15em] uppercase disabled:opacity-60 inline-flex items-center justify-center gap-2 transition-colors";
 export const ghostBtn =
-  "h-10 px-6 text-xs tracking-[0.15em] uppercase text-stone-600 hover:text-[#1a1a1a] inline-flex items-center justify-center";
+  "h-10 px-6 text-xs tracking-[0.15em] uppercase text-stone-600 hover:text-foreground inline-flex items-center justify-center";
 
 export type Notice = { tone: "ok" | "error"; text: string } | null;
 

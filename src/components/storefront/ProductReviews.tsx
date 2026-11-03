@@ -13,7 +13,7 @@ function Stars({ value, size = "w-4 h-4", onChange }: { value: number; size?: st
       {[1, 2, 3, 4, 5].map((n) => {
         const star = (
           <Star
-            className={`${size} ${n <= value ? "fill-[#1a1a1a] text-[#1a1a1a]" : "text-stone-300"}`}
+            className={`${size} ${n <= value ? "fill-foreground text-foreground" : "text-stone-300"}`}
             strokeWidth={1.4}
           />
         );
@@ -178,8 +178,8 @@ export default function ProductReviews({ slug }: { slug: string }) {
             <div key={r.id} className="py-6">
               <div className="flex flex-wrap items-center gap-3">
                 <Stars value={r.rating} />
-                {r.title && <p className="text-sm font-medium text-[#1a1a1a]">{r.title}</p>}
-                <span className="inline-flex items-center gap-1 text-[10px] tracking-[0.15em] uppercase text-[#2D5A27]">
+                {r.title && <p className="text-sm font-medium text-foreground">{r.title}</p>}
+                <span className="inline-flex items-center gap-1 text-[10px] tracking-[0.15em] uppercase text-[var(--success)]">
                   <CheckCircle2 className="w-3.5 h-3.5" /> Verified purchase
                 </span>
               </div>

@@ -58,7 +58,7 @@ export default function ThemesView({ themes, override }: ThemesData) {
             value={selected}
             disabled={savingOverride}
             onChange={(e) => changeOverride(e.target.value)}
-            className="h-10 w-60 px-3 text-sm bg-transparent border border-stone-300 rounded-none outline-none focus:border-[#1a1a1a] disabled:opacity-60"
+            className="h-10 w-60 px-3 text-sm bg-transparent border border-stone-300 rounded-none outline-none focus:border-foreground disabled:opacity-60"
           >
             <option value="auto">Automatic (by schedule)</option>
             {themes.filter((t) => t.active).map((t) => <option key={t.id} value={t.slug}>{t.name}</option>)}
@@ -76,11 +76,11 @@ export default function ThemesView({ themes, override }: ThemesData) {
       ) : (
         <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
           {themes.map((t) => (
-            <div key={t.id} className={`border p-4 ${selected === t.slug ? "border-[#1a1a1a]" : "border-stone-200"}`}>
+            <div key={t.id} className={`border p-4 ${selected === t.slug ? "border-foreground" : "border-stone-200"}`}>
               <div className="flex items-center justify-between mb-3">
-                <p className="text-sm font-semibold text-[#1a1a1a] truncate">{t.name}</p>
+                <p className="text-sm font-semibold text-foreground truncate">{t.name}</p>
                 <div className="flex items-center gap-3 shrink-0">
-                  <button onClick={() => setEditor({ theme: t })} className="text-xs text-stone-500 hover:text-[#1a1a1a] inline-flex items-center gap-1">
+                  <button onClick={() => setEditor({ theme: t })} className="text-xs text-stone-500 hover:text-foreground inline-flex items-center gap-1">
                     <Pencil className="w-3 h-3" /> Edit
                   </button>
                   {t.slug !== "default" && (
@@ -98,7 +98,7 @@ export default function ThemesView({ themes, override }: ThemesData) {
               <p className="text-[10px] tracking-[0.15em] uppercase text-stone-400">
                 {schedule(t)} · {t.active ? "active" : "inactive"}
               </p>
-              {selected === t.slug && <p className="text-[10px] tracking-[0.15em] uppercase text-[#1a1a1a] mt-1">In use (manual choice)</p>}
+              {selected === t.slug && <p className="text-[10px] tracking-[0.15em] uppercase text-foreground mt-1">In use (manual choice)</p>}
             </div>
           ))}
         </div>

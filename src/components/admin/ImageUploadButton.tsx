@@ -68,8 +68,8 @@ export default function ImageUploadButton({
   return (
     <div>
       <label
-        className={`inline-flex items-center gap-2 h-10 px-5 border border-stone-300 text-xs tracking-[0.15em] uppercase transition-colors focus-within:border-[#1a1a1a] ${
-          busy ? "opacity-60 cursor-wait" : "cursor-pointer hover:border-[#1a1a1a]"
+        className={`inline-flex items-center gap-2 h-10 px-5 border border-stone-300 text-xs tracking-[0.15em] uppercase transition-colors focus-within:border-foreground ${
+          busy ? "opacity-60 cursor-wait" : "cursor-pointer hover:border-foreground"
         }`}
       >
         {busy ? <Loader2 className="w-3.5 h-3.5 animate-spin" /> : <ImagePlus className="w-3.5 h-3.5" />}

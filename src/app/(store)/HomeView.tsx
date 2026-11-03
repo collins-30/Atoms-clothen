@@ -63,7 +63,7 @@ export default function HomeView({ banners }: { banners: StoreBanner[] }) {
             {heroBanner?.title || "Form, in its purest state."}
           </h1>
           <div className="mt-8 flex flex-wrap gap-3">
-            <Link href={heroBanner?.link || "/shop?gender=women"} className="h-12 px-8 bg-background text-foreground text-xs tracking-[0.2em] uppercase flex items-center hover:bg-white">{heroBanner?.buttonText || "Shop Women"}</Link>
+            <Link href={heroBanner?.link || "/shop?gender=women"} className="h-12 px-8 bg-background text-foreground text-xs tracking-[0.2em] uppercase flex items-center hover:bg-background/90">{heroBanner?.buttonText || "Shop Women"}</Link>
             {!heroBanner && <Link href="/shop?gender=men" className="h-12 px-8 border border-background text-background text-xs tracking-[0.2em] uppercase flex items-center hover:bg-background/10">Shop Men</Link>}
           </div>
         </div>
@@ -89,7 +89,7 @@ export default function HomeView({ banners }: { banners: StoreBanner[] }) {
           <h2 className="text-background text-4xl md:text-6xl font-bold tracking-tight max-w-2xl" style={{ fontFamily: "var(--font-heading)" }}>
             {promoBanner?.title || "Tailored wool, built for the cold."}
           </h2>
-          <Link href={promoBanner?.link || "/shop"} className="mt-8 h-12 px-8 bg-background text-foreground text-xs tracking-[0.2em] uppercase flex items-center hover:bg-white">{promoBanner?.buttonText || "Explore the collection"}</Link>
+          <Link href={promoBanner?.link || "/shop"} className="mt-8 h-12 px-8 bg-background text-foreground text-xs tracking-[0.2em] uppercase flex items-center hover:bg-background/90">{promoBanner?.buttonText || "Explore the collection"}</Link>
         </div>
       </section>
 

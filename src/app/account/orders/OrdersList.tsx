@@ -36,8 +36,8 @@ export default function OrdersList({ orders }: { orders: OrderRow[] }) {
               onClick={() => setFilter(f)}
               className={`px-4 py-2 text-[10px] tracking-[0.15em] uppercase whitespace-nowrap border transition-colors ${
                 filter === f
-                  ? "border-[#1a1a1a] bg-[#1a1a1a] text-[#F9F9F7]"
-                  : "border-stone-200 text-stone-500 hover:border-[#1a1a1a] hover:text-[#1a1a1a]"
+                  ? "border-foreground bg-foreground text-background"
+                  : "border-stone-200 text-stone-500 hover:border-foreground hover:text-foreground"
               }`}
             >
               {f === "all" ? "All" : ORDER_STATUS_LABELS[f]} ({count})
@@ -53,7 +53,7 @@ export default function OrdersList({ orders }: { orders: OrderRow[] }) {
               ? "You have no orders yet."
               : `You have no ${filter === "all" ? "" : ORDER_STATUS_LABELS[filter].toLowerCase()} orders.`}
           </p>
-          <Link href="/shop" className="inline-flex items-center gap-2 text-xs tracking-[0.15em] uppercase border border-[#1a1a1a] px-6 py-3 text-[#1a1a1a] hover:bg-[#1a1a1a] hover:text-[#F9F9F7] transition-colors">
+          <Link href="/shop" className="inline-flex items-center gap-2 text-xs tracking-[0.15em] uppercase border border-foreground px-6 py-3 text-foreground hover:bg-foreground hover:text-background transition-colors">
             Continue shopping
           </Link>
         </div>
@@ -66,11 +66,11 @@ export default function OrdersList({ orders }: { orders: OrderRow[] }) {
               className="flex flex-wrap items-center justify-between gap-3 py-5 px-2 -mx-2 hover:bg-stone-50 transition-colors"
             >
               <div className="min-w-[140px]">
-                <p className="text-sm font-medium text-[#1a1a1a]">{o.orderNumber}</p>
+                <p className="text-sm font-medium text-foreground">{o.orderNumber}</p>
                 <p className="text-xs text-stone-500 mt-0.5">{o.dateLabel}</p>
               </div>
               <p className="text-sm text-stone-600 flex-1 min-w-[180px] truncate">{o.summary}</p>
-              <span className="text-sm text-[#1a1a1a]">{o.totalLabel}</span>
+              <span className="text-sm text-foreground">{o.totalLabel}</span>
               <div className="flex items-center gap-4">
                 <OrderStatusBadge status={o.status} />
                 <ChevronRight className="w-4 h-4 text-stone-300" />

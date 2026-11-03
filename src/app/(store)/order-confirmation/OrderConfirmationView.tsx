@@ -55,7 +55,7 @@ export default function OrderConfirmationView({ order }: { order: ConfirmationOr
     <div className="max-w-[720px] mx-auto px-4 md:px-8 py-16 md:py-24">
       <div className="text-center mb-10">
         {paid ? (
-          <CheckCircle2 className="w-10 h-10 mx-auto mb-4 text-[#2D5A27]" />
+          <CheckCircle2 className="w-10 h-10 mx-auto mb-4 text-[var(--success)]" />
         ) : failed ? (
           <XCircle className="w-10 h-10 mx-auto mb-4 text-destructive" />
         ) : (

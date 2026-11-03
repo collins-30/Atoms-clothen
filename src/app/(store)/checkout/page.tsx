@@ -346,11 +346,11 @@ export default function CheckoutPage() {
               </Button>
             ) : <span />}
             {step < 5 ? (
-              <Button onClick={next} className="h-12 px-8 bg-foreground text-background text-xs tracking-[0.2em] uppercase hover:bg-[#2D5A27]">
+              <Button onClick={next} className="h-12 px-8 bg-foreground text-background text-xs tracking-[0.2em] uppercase hover:bg-[var(--success)] hover:text-background">
                 Continue <ArrowRight className="w-4 h-4" />
               </Button>
             ) : (
-              <Button onClick={placeOrder} disabled={placing || !fresh} className="h-12 px-8 bg-foreground text-background text-xs tracking-[0.2em] uppercase hover:bg-[#2D5A27] disabled:opacity-60">
+              <Button onClick={placeOrder} disabled={placing || !fresh} className="h-12 px-8 bg-foreground text-background text-xs tracking-[0.2em] uppercase hover:bg-[var(--success)] hover:text-background disabled:opacity-60">
                 {placing ? "Redirecting…" : "Place order"} <Lock className="w-3.5 h-3.5" />
               </Button>
             )}

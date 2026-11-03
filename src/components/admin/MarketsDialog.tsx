@@ -19,7 +19,7 @@ type Row = {
   shippingExpress: string;
 };
 
-const cell = "w-full h-9 px-2 text-sm bg-transparent border border-stone-300 rounded-none outline-none focus:border-[#1a1a1a] disabled:bg-stone-100 disabled:text-stone-500";
+const cell = "w-full h-9 px-2 text-sm bg-transparent border border-stone-300 rounded-none outline-none focus:border-foreground disabled:bg-stone-100 disabled:text-stone-500";
 const mini = "block text-[9px] tracking-[0.15em] uppercase text-stone-500 mb-1";
 
 export default function MarketsDialog({
@@ -104,15 +104,15 @@ export default function MarketsDialog({
 
   return (
     <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
-      <DialogContent className="sm:max-w-3xl max-h-[85vh] overflow-y-auto rounded-none bg-[#F9F9F7]">
+      <DialogContent className="sm:max-w-3xl max-h-[85vh] overflow-y-auto rounded-none bg-background">
         <DialogHeader>
-          <DialogTitle className="text-sm tracking-[0.2em] uppercase text-[#1a1a1a]" style={{ fontFamily: "var(--font-heading)" }}>
+          <DialogTitle className="text-sm tracking-[0.2em] uppercase text-foreground" style={{ fontFamily: "var(--font-heading)" }}>
             Manage markets
           </DialogTitle>
         </DialogHeader>
 
         <div className="flex justify-end gap-3">
-          <button onClick={add} className="h-10 px-5 border border-stone-300 text-xs tracking-[0.15em] uppercase hover:border-[#1a1a1a] inline-flex items-center gap-2">
+          <button onClick={add} className="h-10 px-5 border border-stone-300 text-xs tracking-[0.15em] uppercase hover:border-foreground inline-flex items-center gap-2">
             <Plus className="w-3.5 h-3.5" /> Add market
           </button>
           <button onClick={save} disabled={saving} className={primaryBtn}>
@@ -134,7 +134,7 @@ export default function MarketsDialog({
               <div><label className={mini}>Express ship</label><input type="number" min="0" step="0.01" value={r.shippingExpress} onChange={(e) => patch(r.key, { shippingExpress: e.target.value })} className={cell} placeholder="default" /></div>
               <div className="flex items-center gap-3 pb-1">
                 <label className="flex items-center gap-2 text-xs text-stone-500 cursor-pointer">
-                  <input type="checkbox" checked={r.active} onChange={(e) => patch(r.key, { active: e.target.checked })} className="size-4 accent-[#1a1a1a]" />
+                  <input type="checkbox" checked={r.active} onChange={(e) => patch(r.key, { active: e.target.checked })} className="size-4 accent-primary" />
                   Active
                 </label>
                 <button onClick={() => remove(r)} className="text-stone-300 hover:text-rose-700" aria-label={`Delete ${r.name || "market"}`}>

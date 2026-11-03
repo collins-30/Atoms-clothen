@@ -94,7 +94,7 @@ export default function Footer() {
       <div className="max-w-[1600px] mx-auto px-4 md:px-8 py-6 flex flex-col md:flex-row items-center justify-between gap-4">
         <p className="text-xs text-white/40">© {new Date().getFullYear()} JAMAS. All rights reserved.</p>
         <div className="flex gap-5">
-          <a href="https://instagram.com" target="_blank" rel="noreferrer" aria-label="Instagram"><InstagramIcon className="text-white/70 hover:text-white" /></a>
+          <a href="https://instagram.com/atomicwithfriends" target="_blank" rel="noreferrer" aria-label="Instagram"><InstagramIcon className="text-white/70 hover:text-white" /></a>
           <a href="https://facebook.com" target="_blank" rel="noreferrer" aria-label="Facebook"><FacebookIcon className="text-white/70 hover:text-white" /></a>
           <a href="https://twitter.com" target="_blank" rel="noreferrer" aria-label="Twitter"><TwitterIcon className="text-white/70 hover:text-white" /></a>
         </div>

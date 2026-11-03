@@ -330,7 +330,7 @@ export default function ProductDetailView({ slug }: { slug: string }) {
 
             {/* Stock status */}
             {size && stock > 0 && stock <= 5 && (
-              <p className="mt-4 text-xs text-[#2D5A27]">
+              <p className="mt-4 text-xs text-[var(--success)]">
                 Only {stock} left in this size
               </p>
             )}
@@ -372,7 +372,7 @@ export default function ProductDetailView({ slug }: { slug: string }) {
               <button
                 onClick={handleAdd}
                 disabled={!activeColor || !size || stock <= 0}
-                className="flex-1 h-12 bg-foreground text-background text-xs tracking-[0.2em] uppercase hover:bg-[#2D5A27] transition-colors disabled:bg-stone-300 disabled:cursor-not-allowed"
+                className="flex-1 h-12 bg-foreground text-background text-xs tracking-[0.2em] uppercase hover:bg-[var(--success)] hover:text-background transition-colors disabled:bg-stone-300 disabled:cursor-not-allowed"
               >
                 {!activeColor
                   ? "Select color"
@@ -391,7 +391,7 @@ export default function ProductDetailView({ slug }: { slug: string }) {
                 <Heart
                   className={`w-5 h-5 ${
                     wished
-                      ? "fill-[#1a1a1a] text-foreground"
+                      ? "fill-foreground text-foreground"
                       : "text-foreground"
                   }`}
                   strokeWidth={1.4}

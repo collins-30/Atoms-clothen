@@ -6,6 +6,7 @@ import bcrypt from "bcryptjs";
 import { z } from "zod";
 import type { Role } from "@prisma/client";
 import { prisma } from "@/lib/db";
+import { clearLoginFailures, ipFromHeaders, loginBlockedMinutes, recordLoginFailure } from "@/lib/rate-limit";
 
 const credentialsSchema = z.object({
   email: z.string().email(),
@@ -23,15 +24,25 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
     Google({ allowDangerousEmailAccountLinking: true }), // reads AUTH_GOOGLE_ID / AUTH_GOOGLE_SECRET
     Credentials({
       credentials: { email: {}, password: {} },
-      async authorize(raw) {
+      async authorize(raw, request) {
         const parsed = credentialsSchema.safeParse(raw);
         if (!parsed.success) return null;
-        const user = await prisma.user.findUnique({
-          where: { email: parsed.data.email.toLowerCase() },
-        });
-        if (!user?.passwordHash || !user.emailVerified) return null; // unverified emails can't log in
+        const email = parsed.data.email.toLowerCase();
+        // This is the real gate: anyone can post straight to /api/auth/callback/credentials
+        // and skip the login form, so the rate limit has to be checked here too.
+        const ip = ipFromHeaders(request.headers);
+        if ((await loginBlockedMinutes(email, ip)) > 0) return null;
+        const user = await prisma.user.findUnique({ where: { email } });
+        if (!user?.passwordHash || !user.emailVerified) {
+          await recordLoginFailure(email, ip);
+          return null; // unverified emails can't log in
+        }
         const ok = await bcrypt.compare(parsed.data.password, user.passwordHash);
-        if (!ok) return null;
+        if (!ok) {
+          await recordLoginFailure(email, ip);
+          return null;
+        }
+        await clearLoginFailures(email, ip);
         return { id: user.id, name: user.name, email: user.email, image: user.image, role: user.role };
       },
     }),

@@ -69,7 +69,7 @@ export default function BannersView({ banners }: { banners: AdminBanner[] }) {
         )}
       </div>
       <div className="flex-1 min-w-[160px]">
-        <p className="text-sm font-medium text-[#1a1a1a]">{b.title}</p>
+        <p className="text-sm font-medium text-foreground">{b.title}</p>
         {b.subtitle && <p className="text-xs text-stone-500">{b.subtitle}</p>}
         {b.link && <p className="text-xs text-stone-400 font-mono">{b.link}</p>}
       </div>
@@ -78,7 +78,7 @@ export default function BannersView({ banners }: { banners: AdminBanner[] }) {
       </button>
       <span className="text-xs text-stone-400 w-8 text-right">#{b.displayOrder}</span>
       <div className="flex items-center gap-4">
-        <button onClick={() => open(b)} className="text-xs text-stone-500 hover:text-[#1a1a1a] inline-flex items-center gap-1">
+        <button onClick={() => open(b)} className="text-xs text-stone-500 hover:text-foreground inline-flex items-center gap-1">
           <Pencil className="w-3 h-3" /> Edit
         </button>
         <button onClick={() => remove(b)} className="text-stone-300 hover:text-rose-700" aria-label={`Delete ${b.title}`}>
@@ -111,11 +111,11 @@ export default function BannersView({ banners }: { banners: AdminBanner[] }) {
       })}
 
       <Dialog open={!!draft} onOpenChange={(o) => { if (!o) setDraft(null); }}>
-        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto rounded-none bg-[#F9F9F7]">
+        <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto rounded-none bg-background">
           {draft && (
             <>
               <DialogHeader>
-                <DialogTitle className="text-sm tracking-[0.2em] uppercase text-[#1a1a1a]" style={{ fontFamily: "var(--font-heading)" }}>
+                <DialogTitle className="text-sm tracking-[0.2em] uppercase text-foreground" style={{ fontFamily: "var(--font-heading)" }}>
                   {draft.id ? "Edit banner" : "New banner"}
                 </DialogTitle>
               </DialogHeader>
@@ -173,7 +173,7 @@ export default function BannersView({ banners }: { banners: AdminBanner[] }) {
                   </div>
                 </div>
                 <label className="flex items-center gap-2 text-sm text-stone-600 cursor-pointer">
-                  <input type="checkbox" checked={draft.active} onChange={(e) => setDraft({ ...draft, active: e.target.checked })} className="size-4 accent-[#1a1a1a]" />
+                  <input type="checkbox" checked={draft.active} onChange={(e) => setDraft({ ...draft, active: e.target.checked })} className="size-4 accent-primary" />
                   Live on homepage
                 </label>
                 {formError && <p role="alert" className="text-sm text-rose-700">{formError}</p>}

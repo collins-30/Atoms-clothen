@@ -76,7 +76,7 @@ function MarketPrices({
         <div className="divide-y divide-stone-200 border-y border-stone-200">
           {products.map((p) => (
             <div key={p.id} className="flex items-center gap-4 py-3">
-              <p className="text-sm text-[#1a1a1a] flex-1 min-w-0 truncate">
+              <p className="text-sm text-foreground flex-1 min-w-0 truncate">
                 {p.name}
                 {p.status !== "PUBLISHED" && <span className="ml-2 text-[10px] tracking-[0.15em] uppercase text-stone-400">{p.status.toLowerCase()}</span>}
               </p>
@@ -90,7 +90,7 @@ function MarketPrices({
                   value={cells[p.id]?.price ?? ""}
                   onChange={(e) => setCells((c) => ({ ...c, [p.id]: { ...c[p.id], price: e.target.value } }))}
                   aria-label={`Price for ${p.name}`}
-                  className="w-24 h-9 px-2 text-sm text-right bg-transparent border border-stone-300 rounded-none outline-none focus:border-[#1a1a1a]"
+                  className="w-24 h-9 px-2 text-sm text-right bg-transparent border border-stone-300 rounded-none outline-none focus:border-foreground"
                 />
               </div>
               <label className="flex items-center gap-2 text-xs text-stone-500 cursor-pointer w-28">
@@ -98,7 +98,7 @@ function MarketPrices({
                   type="checkbox"
                   checked={cells[p.id]?.available ?? true}
                   onChange={(e) => setCells((c) => ({ ...c, [p.id]: { ...c[p.id], available: e.target.checked } }))}
-                  className="size-4 accent-[#1a1a1a]"
+                  className="size-4 accent-primary"
                 />
                 Available
               </label>
@@ -126,12 +126,12 @@ export default function PricingView({ markets, products, prices }: PricingData) 
             value={market.id}
             onChange={(e) => { setMarketId(e.target.value); setNotice(null); }}
             aria-label="Market"
-            className="h-10 w-full sm:w-64 px-3 text-sm bg-transparent border border-stone-300 rounded-none outline-none focus:border-[#1a1a1a]"
+            className="h-10 w-full sm:w-64 px-3 text-sm bg-transparent border border-stone-300 rounded-none outline-none focus:border-foreground"
           >
             {markets.map((m) => <option key={m.id} value={m.id}>{m.name} ({m.currency}){m.active ? "" : " · inactive"}</option>)}
           </select>
         )}
-        <button onClick={() => setManage(true)} className="sm:ml-auto h-10 px-6 border border-stone-300 text-xs tracking-[0.15em] uppercase hover:border-[#1a1a1a]">
+        <button onClick={() => setManage(true)} className="sm:ml-auto h-10 px-6 border border-stone-300 text-xs tracking-[0.15em] uppercase hover:border-foreground">
           Manage markets
         </button>
       </div>

@@ -24,7 +24,7 @@ async function DashboardContent() {
           <div key={s.label} className="border border-stone-200 p-5">
             <s.icon className="w-4 h-4 text-stone-400 mb-3" />
             <p className="text-[10px] tracking-[0.2em] uppercase text-stone-400">{s.label}</p>
-            <p className="text-3xl font-semibold text-[#1a1a1a] mt-1" style={{ fontFamily: "var(--font-heading)" }}>
+            <p className="text-3xl font-semibold text-foreground mt-1" style={{ fontFamily: "var(--font-heading)" }}>
               {s.value}
             </p>
           </div>
@@ -33,22 +33,22 @@ async function DashboardContent() {
 
       <div className="grid lg:grid-cols-2 gap-8 mt-10">
         <div className="border border-stone-200 p-6">
-          <h2 className="text-sm tracking-[0.2em] uppercase text-[#1a1a1a] mb-5">Orders by status</h2>
+          <h2 className="text-sm tracking-[0.2em] uppercase text-foreground mb-5">Orders by status</h2>
           <div className="flex flex-wrap gap-2">
             {ORDER_STATUSES.map((s) => (
               <span
                 key={s}
-                className={`text-xs px-3 py-1.5 border ${byStatus[s] ? "border-stone-300 text-[#1a1a1a]" : "border-stone-100 text-stone-300"}`}
+                className={`text-xs px-3 py-1.5 border ${byStatus[s] ? "border-stone-300 text-foreground" : "border-stone-100 text-stone-300"}`}
               >
                 {ORDER_STATUS_LABELS[s]} · {byStatus[s] ?? 0}
               </span>
             ))}
           </div>
 
-          <h2 className="text-sm tracking-[0.2em] uppercase text-[#1a1a1a] mt-8 mb-3">Revenue (paid)</h2>
+          <h2 className="text-sm tracking-[0.2em] uppercase text-foreground mt-8 mb-3">Revenue (paid)</h2>
           <div className="flex flex-wrap gap-6">
             {revenue.map((r) => (
-              <p key={r.symbol} className="text-2xl font-semibold text-[#1a1a1a]" style={{ fontFamily: "var(--font-heading)" }}>
+              <p key={r.symbol} className="text-2xl font-semibold text-foreground" style={{ fontFamily: "var(--font-heading)" }}>
                 {fmtMoney(r.total, r.symbol)}
               </p>
             ))}
@@ -58,8 +58,8 @@ async function DashboardContent() {
 
         <div className="border border-stone-200 p-6">
           <div className="flex items-center justify-between mb-5">
-            <h2 className="text-sm tracking-[0.2em] uppercase text-[#1a1a1a]">Recent orders</h2>
-            <Link href="/admin/orders" className="inline-flex items-center gap-1 text-xs tracking-[0.15em] uppercase text-stone-500 hover:text-[#1a1a1a]">
+            <h2 className="text-sm tracking-[0.2em] uppercase text-foreground">Recent orders</h2>
+            <Link href="/admin/orders" className="inline-flex items-center gap-1 text-xs tracking-[0.15em] uppercase text-stone-500 hover:text-foreground">
               All orders <ArrowRight className="w-3.5 h-3.5" />
             </Link>
           </div>
@@ -70,11 +70,11 @@ async function DashboardContent() {
               {recent.map((o) => (
                 <div key={o.id} className="flex items-center justify-between gap-3 py-3">
                   <div className="min-w-0">
-                    <p className="text-sm font-medium text-[#1a1a1a]">{o.orderNumber}</p>
+                    <p className="text-sm font-medium text-foreground">{o.orderNumber}</p>
                     <p className="text-xs text-stone-500 truncate">{o.email ?? "—"}</p>
                   </div>
                   <OrderStatusBadge status={o.status} />
-                  <span className="text-sm text-[#1a1a1a] w-24 text-right">{fmtMoney(o.total, o.symbol)}</span>
+                  <span className="text-sm text-foreground w-24 text-right">{fmtMoney(o.total, o.symbol)}</span>
                 </div>
               ))}
             </div>

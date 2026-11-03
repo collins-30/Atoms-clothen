@@ -6,6 +6,14 @@ import { after } from "next/server";
 import { prisma } from "@/lib/db";
 import { signIn } from "@/lib/auth";
 import { safeReturnTo } from "@/lib/return-to";
+import {
+  clearLoginFailures,
+  clientIp,
+  loginBlockedMinutes,
+  overHourlyLimit,
+  recordLoginFailure,
+  waitMessage,
+} from "@/lib/rate-limit";
 import { codeSchema, emailOnlySchema, loginSchema, registerSchema, resetSchema } from "@/lib/validators/auth";
 import { MAX_CODE_ATTEMPTS, hashToken, issueResetLink, issueVerificationCode, safeEqualHex } from "@/server/auth-tokens";
 
@@ -22,6 +30,11 @@ export async function registerUser(raw: unknown): Promise<ActionResult> {
   const parsed = registerSchema.safeParse(raw);
   if (!parsed.success) return { ok: false, error: firstIssue(parsed.error) };
   const { email, password } = parsed.data;
+
+  // Each sign-up costs a password hash and an email, so cap them per visitor.
+  if (await overHourlyLimit("register-ip", await clientIp(), 10)) {
+    return { ok: false, error: "Too many sign-up attempts. Please try again later." };
+  }
 
   const existing = await prisma.user.findUnique({ where: { email }, select: { emailVerified: true } });
   if (existing?.emailVerified) {
@@ -44,6 +57,10 @@ export async function verifyEmailCode(raw: unknown): Promise<ActionResult> {
   const parsed = codeSchema.safeParse(raw);
   if (!parsed.success) return { ok: false, error: firstIssue(parsed.error) };
   const { email, code } = parsed.data;
+
+  if (await overHourlyLimit("verify-ip", await clientIp(), 30)) {
+    return { ok: false, error: "Too many attempts. Please try again later." };
+  }
 
   const rec = await prisma.authToken.findFirst({
     where: { email, purpose: "VERIFY_EMAIL" },
@@ -80,6 +97,10 @@ export async function resendVerificationCode(raw: unknown): Promise<ActionResult
   if (!parsed.success) return { ok: false, error: firstIssue(parsed.error) };
   const { email } = parsed.data;
 
+  if (await overHourlyLimit("resend-email", email, 5)) {
+    return { ok: false, error: "Too many requests. Please try again later." };
+  }
+
   const user = await prisma.user.findUnique({ where: { email }, select: { emailVerified: true } });
   if (!user || user.emailVerified) return { ok: true }; // say nothing about who has an account
 
@@ -96,6 +117,11 @@ export async function loginWithPassword(raw: unknown): Promise<LoginResult> {
   if (!parsed.success) return { ok: false, error: BAD_LOGIN };
   const { email, password, returnTo } = parsed.data;
 
+  // Too many wrong passwords recently? Refuse before doing any work.
+  const ip = await clientIp();
+  const wait = await loginBlockedMinutes(email, ip);
+  if (wait > 0) return { ok: false, error: waitMessage(wait) };
+
   const user = await prisma.user.findUnique({
     where: { email },
     select: { passwordHash: true, emailVerified: true },
@@ -105,7 +131,10 @@ export async function loginWithPassword(raw: unknown): Promise<LoginResult> {
   // time doesn't reveal whether an account exists.
   dummyHash ??= await bcrypt.hash("not-a-real-password", 12);
   const matches = await bcrypt.compare(password, user?.passwordHash ?? dummyHash);
-  if (!user?.passwordHash || !matches) return { ok: false, error: BAD_LOGIN };
+  if (!user?.passwordHash || !matches) {
+    await recordLoginFailure(email, ip);
+    return { ok: false, error: BAD_LOGIN };
+  }
 
   if (!user.emailVerified) {
     await issueVerificationCode(email); // sends a new code (at most one per minute)
@@ -118,6 +147,7 @@ export async function loginWithPassword(raw: unknown): Promise<LoginResult> {
     if (e instanceof AuthError) return { ok: false, error: BAD_LOGIN };
     throw e;
   }
+  await clearLoginFailures(email, ip);
   return { ok: true, redirectTo: safeReturnTo(returnTo) };
 }
 
@@ -132,6 +162,13 @@ export async function requestPasswordReset(raw: unknown): Promise<ActionResult> 
   const parsed = emailOnlySchema.safeParse(raw);
   if (!parsed.success) return { ok: false, error: firstIssue(parsed.error) };
   const { email } = parsed.data;
+
+  // Each request can send an email, so cap them. Over the limit we still answer
+  // "ok" (and send nothing), so the form never reveals anything about accounts.
+  const ip = await clientIp();
+  const overIp = await overHourlyLimit("reset-ip", ip, 10);
+  const overEmail = await overHourlyLimit("reset-email", email, 5);
+  if (overIp || overEmail) return { ok: true };
 
   const user = await prisma.user.findUnique({ where: { email }, select: { id: true } });
   if (user) {

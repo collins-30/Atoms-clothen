@@ -84,9 +84,9 @@ export default function ThemeFormDialog({
 
   return (
     <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
-      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto rounded-none bg-[#F9F9F7]">
+      <DialogContent className="sm:max-w-lg max-h-[90vh] overflow-y-auto rounded-none bg-background">
         <DialogHeader>
-          <DialogTitle className="text-sm tracking-[0.2em] uppercase text-[#1a1a1a]" style={{ fontFamily: "var(--font-heading)" }}>
+          <DialogTitle className="text-sm tracking-[0.2em] uppercase text-foreground" style={{ fontFamily: "var(--font-heading)" }}>
             {isEdit ? `Edit theme — ${theme.name}` : "New theme"}
           </DialogTitle>
         </DialogHeader>
@@ -144,11 +144,11 @@ export default function ThemeFormDialog({
             </div>
             <div className="flex gap-6 mt-3">
               <label className="flex items-center gap-2 text-sm text-stone-600 cursor-pointer">
-                <input type="checkbox" checked={form.autoActivate} onChange={(e) => set("autoActivate", e.target.checked)} className="size-4 accent-[#1a1a1a]" />
+                <input type="checkbox" checked={form.autoActivate} onChange={(e) => set("autoActivate", e.target.checked)} className="size-4 accent-primary" />
                 Automatic activation
               </label>
               <label className="flex items-center gap-2 text-sm text-stone-600 cursor-pointer">
-                <input type="checkbox" checked={form.active} onChange={(e) => set("active", e.target.checked)} className="size-4 accent-[#1a1a1a]" />
+                <input type="checkbox" checked={form.active} onChange={(e) => set("active", e.target.checked)} className="size-4 accent-primary" />
                 Active
               </label>
             </div>
@@ -156,7 +156,7 @@ export default function ThemeFormDialog({
 
           <div className="space-y-2">
             <label className="flex items-center gap-2 text-sm text-stone-600 cursor-pointer">
-              <input type="checkbox" checked={form.announcementEnabled} onChange={(e) => set("announcementEnabled", e.target.checked)} className="size-4 accent-[#1a1a1a]" />
+              <input type="checkbox" checked={form.announcementEnabled} onChange={(e) => set("announcementEnabled", e.target.checked)} className="size-4 accent-primary" />
               Custom announcement bar
             </label>
             {form.announcementEnabled && (
@@ -187,7 +187,7 @@ export default function ThemeFormDialog({
                     aria-pressed={on}
                     onClick={() => toggleDecor(d)}
                     className={`px-3 py-1.5 text-[10px] tracking-[0.15em] uppercase border transition-colors ${
-                      on ? "border-[#1a1a1a] bg-[#1a1a1a] text-[#F9F9F7]" : "border-stone-200 text-stone-500 hover:border-[#1a1a1a] hover:text-[#1a1a1a]"
+                      on ? "border-foreground bg-foreground text-background" : "border-stone-200 text-stone-500 hover:border-foreground hover:text-foreground"
                     }`}
                   >
                     {d}

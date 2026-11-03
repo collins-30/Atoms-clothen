@@ -25,7 +25,7 @@ export default function AboutPage() {
 
       <div className="mt-12 space-y-12">
         <Section id="about" title="About">
-          <p>Atelier was founded on a simple idea: fewer, better things. We design and curate a tightly edited collection of apparel for men and women — pieces made from natural and responsibly sourced materials, in a palette that outlasts any season.</p>
+          <p>Jamas was founded on a simple idea: fewer, better things. We design and curate a tightly edited collection of apparel for men and women — pieces made from natural and responsibly sourced materials, in a palette that outlasts any season.</p>
           <p>Every garment is produced in small runs by partners we know personally, and each is built to be worn, washed and kept for years. We don&apos;t chase trends; we refine a wardrobe.</p>
         </Section>
 
@@ -40,7 +40,7 @@ export default function AboutPage() {
         </Section>
 
         <Section id="stores" title="Stores">
-          <p>Our first permanent stores are in New York and Copenhagen, both conceived as calm spaces to try the collection in person, with same-day tailoring appointments.</p>
+          <p>Our first permanent stores are in Cyprus and China, both conceived as calm spaces to try the collection in person, with same-day tailoring appointments.</p>
           <p>Opening hours: Monday–Saturday, 10:00–19:00. Private appointments can be arranged through the contact page. Selected pieces are also carried by a small number of partner boutiques worldwide.</p>
         </Section>
       </div>

@@ -47,13 +47,13 @@ export default function StatusTimeline({ order }: { order: TimelineOrder }) {
             )}
             <span
               className={`relative z-10 mt-0.5 w-[15px] h-[15px] shrink-0 rounded-full border flex items-center justify-center ${
-                done ? "bg-[#1a1a1a] border-[#1a1a1a]" : "bg-[#F9F9F7] border-stone-300"
+                done ? "bg-foreground border-foreground" : "bg-background border-stone-300"
               }`}
             >
-              {done && <span className="w-1.5 h-1.5 bg-[#F9F9F7] rounded-full" />}
+              {done && <span className="w-1.5 h-1.5 bg-background rounded-full" />}
             </span>
             <div className="min-w-0">
-              <p className={`text-sm ${done ? "text-[#1a1a1a] font-medium" : "text-stone-400"}`}>{s.label}</p>
+              <p className={`text-sm ${done ? "text-foreground font-medium" : "text-stone-400"}`}>{s.label}</p>
               {i === 0 && <p className="text-xs text-stone-500 mt-1">{placed}</p>}
               {current && s.key === "SHIPPED" && (order.carrier || order.trackingNumber) && (
                 <p className="text-xs text-stone-500 mt-1">

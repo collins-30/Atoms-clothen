@@ -7,7 +7,8 @@ import { useStore } from "@/lib/store-context";
 import { formatPrice } from "@/lib/format";
 import { FREE_STANDARD_SHIPPING_FROM } from "@/lib/pricing";
 import { ThemeProvider, useTheme } from "@/lib/theme-context";
-import { readableOn, themeVars, type StoreTheme } from "@/lib/theme";
+import { readableOn, type StoreTheme } from "@/lib/theme";
+import ThemeStyle from "@/components/ThemeStyle";
 import Navbar from "./Navbar";
 import Footer from "./Footer";
 import CartDrawer from "./CartDrawer";
@@ -69,7 +70,8 @@ function SeasonalBanner() {
 function StoreShell({ isAdmin, children }: { isAdmin: boolean; children: ReactNode }) {
   const { theme } = useTheme();
   return (
-    <div style={themeVars(theme)} className="relative min-h-screen flex flex-col bg-background text-foreground">
+    <div className="relative min-h-screen flex flex-col bg-background text-foreground">
+      <ThemeStyle theme={theme} />
       {theme.decorations.length > 0 && <ThemeDecorations kinds={theme.decorations} />}
       <AnnouncementBar />
       <Navbar isAdmin={isAdmin} />

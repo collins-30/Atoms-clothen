@@ -23,7 +23,7 @@ export default function AccountTabs() {
             href={t.href}
             aria-current={active ? "page" : undefined}
             className={`pb-3 -mb-px text-xs tracking-[0.15em] uppercase whitespace-nowrap border-b-2 transition-colors ${
-              active ? "border-[#1a1a1a] text-[#1a1a1a]" : "border-transparent text-stone-400 hover:text-[#1a1a1a]"
+              active ? "border-foreground text-foreground" : "border-transparent text-stone-400 hover:text-foreground"
             }`}
           >
             {t.label}

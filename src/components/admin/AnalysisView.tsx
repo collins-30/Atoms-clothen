@@ -22,7 +22,7 @@ export default function AnalysisView({ data }: { data: CurrencyAnalysis[] }) {
   return (
     <div>
       <div className="flex items-center justify-between gap-4">
-        <h1 className="text-2xl font-bold text-[#1a1a1a]" style={{ fontFamily: "var(--font-heading)" }}>
+        <h1 className="text-2xl font-bold text-foreground" style={{ fontFamily: "var(--font-heading)" }}>
           Order Analysis
         </h1>
         {data.length > 1 && (
@@ -32,7 +32,7 @@ export default function AnalysisView({ data }: { data: CurrencyAnalysis[] }) {
                 key={d.symbol}
                 onClick={() => setSymbol(d.symbol)}
                 className={`text-xs px-3 py-1.5 border transition-colors ${
-                  d.symbol === current.symbol ? "border-[#1a1a1a] text-[#1a1a1a]" : "border-stone-200 text-stone-400 hover:text-[#1a1a1a]"
+                  d.symbol === current.symbol ? "border-foreground text-foreground" : "border-stone-200 text-stone-400 hover:text-foreground"
                 }`}
               >
                 {d.symbol}
@@ -47,7 +47,7 @@ export default function AnalysisView({ data }: { data: CurrencyAnalysis[] }) {
           <div key={s.label} className="border border-stone-200 p-5">
             <s.icon className="w-4 h-4 text-stone-400 mb-3" />
             <p className="text-[10px] tracking-[0.2em] uppercase text-stone-400">{s.label}</p>
-            <p className="text-2xl font-semibold text-[#1a1a1a] mt-1 truncate" style={{ fontFamily: "var(--font-heading)" }}>
+            <p className="text-2xl font-semibold text-foreground mt-1 truncate" style={{ fontFamily: "var(--font-heading)" }}>
               {s.value}
             </p>
           </div>

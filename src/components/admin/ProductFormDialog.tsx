@@ -137,9 +137,9 @@ export default function ProductFormDialog({
 
   return (
     <Dialog open onOpenChange={(open) => { if (!open) onClose(); }}>
-      <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto rounded-none bg-[#F9F9F7]">
+      <DialogContent className="sm:max-w-2xl max-h-[85vh] overflow-y-auto rounded-none bg-background">
         <DialogHeader>
-          <DialogTitle className="text-sm tracking-[0.2em] uppercase text-[#1a1a1a]" style={{ fontFamily: "var(--font-heading)" }}>
+          <DialogTitle className="text-sm tracking-[0.2em] uppercase text-foreground" style={{ fontFamily: "var(--font-heading)" }}>
             {isEdit ? "Edit product" : "New product"}
           </DialogTitle>
         </DialogHeader>
@@ -245,7 +245,7 @@ export default function ProductFormDialog({
                 aria-label="Image link"
                 className={inputCls}
               />
-              <button type="button" onClick={addImage} className="h-10 px-4 border border-stone-300 text-xs tracking-[0.1em] uppercase hover:border-[#1a1a1a] inline-flex items-center gap-1">
+              <button type="button" onClick={addImage} className="h-10 px-4 border border-stone-300 text-xs tracking-[0.1em] uppercase hover:border-foreground inline-flex items-center gap-1">
                 <Plus className="w-3.5 h-3.5" /> Add
               </button>
             </div>
@@ -260,7 +260,7 @@ export default function ProductFormDialog({
             <div className="divide-y divide-stone-200 border-y border-stone-200">
               {markets.map((m) => (
                 <div key={m.id} className="flex items-center gap-4 py-2.5">
-                  <span className="text-sm text-[#1a1a1a] flex-1 min-w-0 truncate">
+                  <span className="text-sm text-foreground flex-1 min-w-0 truncate">
                     {m.name} <span className="text-xs text-stone-400">({m.code}, {m.currency}){!m.active && " · inactive"}</span>
                   </span>
                   <div className="flex items-center gap-2">
@@ -273,7 +273,7 @@ export default function ProductFormDialog({
                       value={prices[m.id]?.price ?? ""}
                       onChange={(e) => setPrice(m.id, { price: e.target.value })}
                       aria-label={`Price in ${m.code}`}
-                      className="w-28 h-9 px-2 text-sm text-right bg-transparent border border-stone-300 rounded-none outline-none focus:border-[#1a1a1a]"
+                      className="w-28 h-9 px-2 text-sm text-right bg-transparent border border-stone-300 rounded-none outline-none focus:border-foreground"
                     />
                   </div>
                   <label className="flex items-center gap-2 text-xs text-stone-500 cursor-pointer w-24">
@@ -281,7 +281,7 @@ export default function ProductFormDialog({
                       type="checkbox"
                       checked={prices[m.id]?.available ?? true}
                       onChange={(e) => setPrice(m.id, { available: e.target.checked })}
-                      className="size-4 accent-[#1a1a1a]"
+                      className="size-4 accent-primary"
                     />
                     Available
                   </label>
@@ -295,7 +295,7 @@ export default function ProductFormDialog({
           <div className="flex flex-wrap gap-6">
             {FLAGS.map(([key, text]) => (
               <label key={key} className="flex items-center gap-2 text-sm text-stone-600 cursor-pointer">
-                <input type="checkbox" checked={form[key]} onChange={(e) => set(key, e.target.checked)} className="size-4 accent-[#1a1a1a]" />
+                <input type="checkbox" checked={form[key]} onChange={(e) => set(key, e.target.checked)} className="size-4 accent-primary" />
                 {text}
               </label>
             ))}
