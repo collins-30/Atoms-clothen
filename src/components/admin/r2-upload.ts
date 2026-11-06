@@ -26,21 +26,27 @@ function putFile(uploadUrl: string, file: Blob, contentType: string, onProgress?
   });
 }
 
-export async function uploadImageFile(file: File): Promise<Uploaded> {
+export type UploadFolder = "products" | "banners";
+
+export async function uploadImageFile(file: File, folder: UploadFolder = "products"): Promise<Uploaded> {
   if (!IMAGE_TYPES.includes(file.type)) return { ok: false, error: "Use a JPG, PNG, WebP or AVIF image." };
   if (file.size > MAX_IMAGE_BYTES) return { ok: false, error: "Images can be at most 8 MB." };
-  const ticket = await createImageUpload({ folder: "products", filename: file.name, contentType: file.type, size: file.size });
+  const ticket = await createImageUpload({ folder, filename: file.name, contentType: file.type, size: file.size });
   if (!ticket.ok) return ticket;
   return (await putFile(ticket.uploadUrl, file, ticket.contentType)) ? { ok: true, url: ticket.publicUrl } : { ok: false, error: STORAGE_HELP };
 }
 
-export async function uploadVideoFile(file: File, onProgress?: (fraction: number) => void): Promise<Uploaded> {
+export async function uploadVideoFile(
+  file: File,
+  onProgress?: (fraction: number) => void,
+  folder: UploadFolder = "products",
+): Promise<Uploaded> {
   if (file.type === "video/quicktime" || /\.mov$/i.test(file.name)) {
     return { ok: false, error: "That's a .mov file, which most browsers can't play. Export it as MP4 first (see README › Model videos)." };
   }
   if (!VIDEO_TYPES.includes(file.type)) return { ok: false, error: "Use an MP4 or WebM video." };
   if (file.size > MAX_VIDEO_BYTES) return { ok: false, error: "Videos can be at most 60 MB. Shorten or compress it first." };
-  const ticket = await createVideoUpload({ filename: file.name, contentType: file.type, size: file.size });
+  const ticket = await createVideoUpload({ folder, filename: file.name, contentType: file.type, size: file.size });
   if (!ticket.ok) return ticket;
   return (await putFile(ticket.uploadUrl, file, ticket.contentType, onProgress))
     ? { ok: true, url: ticket.publicUrl }

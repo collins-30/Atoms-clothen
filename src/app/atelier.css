@@ -89,3 +89,35 @@ h1, h2, h3, h4 {
   92% { opacity: 0.5; }
   100% { transform: translateY(105vh) rotate(320deg); opacity: 0; }
 }
+
+/* Night Mode on the shop page, for product cards without a night shot: the
+   photo dims, passing through a soft blur. (Cards with a night shot cross-fade
+   to it instead.) With reduced motion the change is instant. */
+@keyframes jamas-to-night {
+  0% { filter: none; }
+  45% { filter: blur(6px) brightness(0.7); }
+  100% { filter: brightness(0.42) saturate(0.75); }
+}
+@keyframes jamas-to-day {
+  0% { filter: brightness(0.42) saturate(0.75); }
+  45% { filter: blur(6px) brightness(0.7); }
+  100% { filter: none; }
+}
+.night-dim { filter: brightness(0.42) saturate(0.75); }
+.night-dim.night-animate { animation: jamas-to-night 0.8s ease-out both; }
+.night-undim.night-animate { animation: jamas-to-day 0.8s ease-out both; }
+@media (prefers-reduced-motion: reduce) {
+  .night-animate { animation: none !important; }
+}
+
+/* Blinking caret for the "Try searching for…" animation in the search box. */
+.typing-caret {
+  display: inline-block;
+  width: 1px;
+  height: 1.1em;
+  margin-left: 2px;
+  background: currentColor;
+  color: var(--foreground);
+  animation: jamas-caret 1s steps(1) infinite;
+}
+@keyframes jamas-caret { 50% { opacity: 0; } }

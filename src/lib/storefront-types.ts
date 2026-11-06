@@ -1,7 +1,7 @@
 // Plain, JSON-safe shapes sent from the server to storefront components.
 // (No Prisma types here: Decimal and Date can't cross to client components.)
 
-import type { StoreMedia, VideoSource } from "@/lib/media";
+import type { NightShot, StoreMedia, VideoSource } from "@/lib/media";
 
 export type StoreProduct = {
   id: string;
@@ -19,6 +19,9 @@ export type StoreProduct = {
   video: VideoSource | null;
   /** Show in the large editorial video section on the home page. */
   editorial: boolean;
+  /** Shown on the card when the shop's Night Mode is on (null: the photo is dimmed instead). */
+  nightShot: NightShot | null;
+  categoryName: string | null;
   colors: { name: string; hex: string }[];
   sizes: string[];
   tags: string[];
@@ -43,6 +46,8 @@ export type StoreBanner = {
   title: string;
   subtitle: string | null;
   image: string | null;
+  /** Muted, looping background video (image is its poster). */
+  video: string | null;
   buttonText: string | null;
   link: string | null;
 };

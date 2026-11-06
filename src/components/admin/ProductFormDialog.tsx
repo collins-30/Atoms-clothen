@@ -105,10 +105,12 @@ export default function ProductFormDialog({
         colors: parseColors(form.colors),
         materials: form.materials,
         care: form.care,
-        images: media.filter((m) => m.kind === "IMAGE").map((m) => m.url).slice(0, 20),
+        images: [...media.filter((m) => m.kind === "IMAGE" && !m.night), ...media.filter((m) => m.kind === "IMAGE" && m.night)]
+          .map((m) => m.url)
+          .slice(0, 20),
         media,
-        cardMedia: media.some((m) => m.kind === "VIDEO") ? cardMedia : "IMAGE",
-        editorial: editorial && media.some((m) => m.kind === "VIDEO"),
+        cardMedia: media.some((m) => m.kind === "VIDEO" && !m.night) ? cardMedia : "IMAGE",
+        editorial: editorial && media.some((m) => m.kind === "VIDEO" && !m.night),
         // a blank price = "not sold in this market"
         prices: markets
           .filter((m) => prices[m.id]?.price.trim() !== "")

@@ -22,6 +22,7 @@ export default function ProductVideo({
   priority = false,
   controls = false,
   weight = 0,
+  active = true,
   imageClassName = "",
 }: {
   src: string;
@@ -33,6 +34,8 @@ export default function ProductVideo({
   controls?: boolean;
   /** Extra priority over other videos on the page (editorial videos use 1). */
   weight?: number;
+  /** False while hidden (e.g. behind a Night Mode layer): it then pauses and doesn't count. */
+  active?: boolean;
   imageClassName?: string;
 }) {
   const ref = useRef<HTMLVideoElement>(null);
@@ -73,7 +76,7 @@ export default function ProductVideo({
       playWhenLoaded.current = false;
       void el.play().catch(() => {});
     }
-    if (!canAutoplay() || userPaused) {
+    if (!canAutoplay() || userPaused || !active) {
       release(el);
       return;
     }
@@ -88,7 +91,7 @@ export default function ProductVideo({
       io.disconnect();
       release(el);
     };
-  }, [near, userPaused, weight, src]);
+  }, [near, userPaused, weight, src, active]);
 
   const toggle = () => {
     const el = ref.current;

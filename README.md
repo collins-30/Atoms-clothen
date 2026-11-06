@@ -41,10 +41,33 @@ the most visible few play at once (4 on desktop, 2 on phones). Visitors who
 ask for reduced motion or use data saver see the poster instead. If a browser
 blocks autoplay, the poster stays.
 
+### Banner videos (Admin › Content)
+
+Hero, promo and craftsmanship banners can have a video as well as (or instead
+of) a photo: edit the banner › **Upload video**. If the banner has no image
+yet, a still frame from the video is saved as its image; the image shows until
+the video plays and for visitors with reduced motion / data saver.
+
+### Night Mode (shop page)
+
+The **Night mode** switch next to Sort fades every product card, through a soft
+blur, to its *night shot*. Tick **Night shot** on a photo or video in Admin ›
+Products (e.g. the same dress filmed in evening light or with flash). Products
+without a night shot have their photo dimmed instead. The visitor's choice is
+remembered in their browser.
+
+### Search box
+
+The search box types out "Try searching for… <category>", cycling through the
+names of active categories that have published products. It stops as soon as
+the visitor types.
+
 ### Database
 
-Migration `20261106090000_product_media` only adds a `ProductMedia` table and
-two columns with defaults (`cardMedia`, `editorial`). Existing products keep
+Migrations `20261106090000_product_media` and
+`20261106130000_banner_video_night_media` only add a `ProductMedia` table and
+columns with defaults (`Product.cardMedia`, `Product.editorial`,
+`ProductMedia.night`, `Banner.videoUrl`). Existing products keep
 working unchanged: until a product is saved again, its media comes from its
 `images` list. Run `npx prisma migrate deploy` on the production database.
 

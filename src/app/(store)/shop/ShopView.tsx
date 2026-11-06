@@ -2,9 +2,11 @@
 
 import { useMemo, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import { SlidersHorizontal, X } from "lucide-react";
+import { Moon, SlidersHorizontal, X } from "lucide-react";
 import { useCatalog } from "@/lib/use-catalog";
 import ProductCard from "@/components/storefront/ProductCard";
+import { NightModeContext, useNightModeSetting } from "@/lib/night-mode";
+import TypingSearch from "@/components/storefront/TypingSearch";
 
 const SORTS = [
   { value: "recommended", label: "Recommended" },
@@ -20,6 +22,13 @@ export default function ShopView() {
   const params = useSearchParams();
   const [sort, setSort] = useState<SortValue>("recommended");
   const [showFilters, setShowFilters] = useState(false);
+  const [nightOn, setNightOn] = useNightModeSetting();
+  const [nightChanged, setNightChanged] = useState(false);
+  const nightMode = useMemo(() => ({ on: nightOn, changed: nightChanged }), [nightOn, nightChanged]);
+  const toggleNight = () => {
+    setNightChanged(true);
+    setNightOn(!nightOn);
+  };
 
   const genderParam = params.get("gender") || "";
   const newOnly = params.get("new") === "1";
@@ -58,7 +67,12 @@ export default function ShopView() {
     if (q) {
       const t = q.toLowerCase();
       list = list.filter(
-        (p) => p.name.toLowerCase().includes(t) || p.categorySlug?.toLowerCase().includes(t) || p.tags.some((tag) => tag.toLowerCase().includes(t)),
+        (p) =>
+          p.name.toLowerCase().includes(t) ||
+          p.categoryName?.toLowerCase().includes(t) ||
+          p.categorySlug?.toLowerCase().replace(/-/g, " ").includes(t) ||
+          p.collection?.toLowerCase().includes(t) ||
+          p.tags.some((tag) => tag.toLowerCase().includes(t)),
       );
     }
     if (selCategory) list = list.filter((p) => p.categorySlug === selCategory);
@@ -123,6 +137,10 @@ export default function ShopView() {
 
   return (
     <div className="max-w-[1600px] mx-auto px-4 md:px-8 pt-8 pb-20">
+      <div className="mb-8 max-w-xl">
+        <TypingSearch key={q} initialQuery={q} />
+      </div>
+
       <div className="mb-8 md:mb-10">
         <p className="text-xs tracking-[0.2em] uppercase text-stone-400 mb-2">{newOnly ? "Just landed" : "Collection"}</p>
         <h1 className="text-3xl md:text-5xl font-bold tracking-tight" style={{ fontFamily: "var(--font-heading)" }}>{title}</h1>
@@ -133,11 +151,31 @@ export default function ShopView() {
           <SlidersHorizontal className="w-4 h-4" /> Filters
         </button>
         <p className="hidden md:block text-sm text-stone-500">{filtered.length} pieces</p>
-        <div className="flex items-center gap-2">
+        <div className="flex items-center gap-5 sm:gap-8">
+          <button
+            type="button"
+            role="switch"
+            aria-checked={nightOn}
+            onClick={toggleNight}
+            className="flex items-center gap-2.5 min-h-11 text-xs tracking-[0.15em] uppercase text-foreground"
+          >
+            <Moon className="w-3.5 h-3.5 hidden sm:block" strokeWidth={1.6} aria-hidden="true" />
+            <span>Night mode</span>
+            <span
+              aria-hidden="true"
+              className={`relative w-10 h-[22px] rounded-full border transition-colors duration-300 ${nightOn ? "bg-foreground border-foreground" : "bg-transparent border-stone-400"}`}
+            >
+              <span
+                className={`absolute top-[3px] left-[3px] w-3.5 h-3.5 rounded-full transition-transform duration-300 ${nightOn ? "translate-x-[18px] bg-background" : "bg-foreground"}`}
+              />
+            </span>
+          </button>
+          <div className="flex items-center gap-2">
           <label htmlFor="sort" className="text-xs tracking-[0.15em] uppercase text-stone-400 hidden sm:block">Sort</label>
           <select id="sort" value={sort} onChange={(e) => setSort(e.target.value as SortValue)} className="text-sm bg-transparent border-b border-stone-300 py-1 outline-none focus:border-foreground cursor-pointer">
             {SORTS.map((s) => <option key={s.value} value={s.value}>{s.label}</option>)}
           </select>
+          </div>
         </div>
       </div>
 
@@ -151,9 +189,11 @@ export default function ShopView() {
           ) : filtered.length === 0 ? (
             <div className="py-24 text-center text-stone-500">No pieces match your filters.</div>
           ) : (
-            <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-10 md:gap-x-6">
-              {filtered.map((p) => <ProductCard key={p.id} product={p} priceMap={priceMap} market={market} />)}
-            </div>
+            <NightModeContext.Provider value={nightMode}>
+              <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-10 md:gap-x-6">
+                {filtered.map((p) => <ProductCard key={p.id} product={p} priceMap={priceMap} market={market} />)}
+              </div>
+            </NightModeContext.Provider>
           )}
         </div>
       </div>

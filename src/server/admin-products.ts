@@ -39,7 +39,7 @@ export type AdminProduct = {
   stock: number; // total pieces across all variants
   prices: { marketId: string; price: number; available: boolean }[];
 };
-export type AdminMedia = { kind: "IMAGE" | "VIDEO"; url: string; posterUrl: string | null; alt: string | null };
+export type AdminMedia = { kind: "IMAGE" | "VIDEO"; url: string; posterUrl: string | null; alt: string | null; night: boolean };
 export type AdminMarketLite = { id: string; code: string; name: string; currency: string; symbol: string; active: boolean };
 export type AdminCategoryLite = { id: string; name: string; gender: Gender; parentId: string | null };
 export type AdminVariant = { id: string; color: string; colorHex: string | null; size: string; sku: string; stock: number };
@@ -72,7 +72,7 @@ export async function getAdminProducts(): Promise<ProductsData> {
       include: {
         category: { select: { name: true } },
         prices: { select: { marketId: true, price: true, available: true } },
-        media: { orderBy: { position: "asc" }, select: { kind: true, url: true, posterUrl: true, alt: true } },
+        media: { orderBy: { position: "asc" }, select: { kind: true, url: true, posterUrl: true, alt: true, night: true } },
       },
     }),
     prisma.category.findMany({
@@ -113,6 +113,7 @@ export async function getAdminProducts(): Promise<ProductsData> {
         url: m.url,
         posterUrl: m.poster,
         alt: m.alt,
+        night: m.night,
       })),
       cardMedia: p.cardMedia,
       editorial: p.editorial,
@@ -135,6 +136,7 @@ const mediaSchema = z.object({
   url: imageUrl,
   posterUrl: imageUrl.nullable(),
   alt: z.string().trim().max(300).nullable(),
+  night: z.boolean().default(false),
 });
 
 const productSchema = z.object({
@@ -195,14 +197,19 @@ export async function saveProduct(raw: unknown): Promise<Ok | Fail> {
     return { ok: false, error: "One of the markets no longer exists." };
   }
 
-  const media = d.media ?? d.images.map((url) => ({ kind: "IMAGE" as const, url, posterUrl: null, alt: null }));
-  const photos = media.filter((m) => m.kind === "IMAGE").map((m) => m.url);
-  const firstVideo = media.find((m) => m.kind === "VIDEO")?.url ?? null;
+  const media = d.media ?? d.images.map((url) => ({ kind: "IMAGE" as const, url, posterUrl: null, alt: null, night: false }));
+  // Daytime photos first, so the main product image is never a night shot.
+  const photos = [
+    ...media.filter((m) => m.kind === "IMAGE" && !m.night),
+    ...media.filter((m) => m.kind === "IMAGE" && m.night),
+  ].map((m) => m.url);
+  const firstVideo = media.find((m) => m.kind === "VIDEO" && !m.night)?.url ?? null;
   const mediaRows = media.map((m, position) => ({
     kind: m.kind,
     url: m.url,
     posterUrl: m.kind === "VIDEO" ? m.posterUrl : null,
     alt: m.alt || null,
+    night: m.night,
     position,
   }));
 

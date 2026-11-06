@@ -249,6 +249,7 @@ model ProductMedia {
   url       String    @db.VarChar(1000)
   posterUrl String?   @db.VarChar(1000) // still frame shown before / instead of a video
   alt       String?   @db.VarChar(300)
+  night     Boolean   @default(false) // a "night shot", shown on the shop page when Night Mode is on
   position  Int       @default(0)
   createdAt DateTime  @default(now())
 
@@ -441,7 +442,8 @@ model Banner {
   type         BannerType @default(PROMO)
   title        String
   subtitle     String?
-  image        String?
+  image        String? // also the poster / fallback when a video is set
+  videoUrl     String?    @db.VarChar(1000) // optional muted, looping background video
   buttonText   String?
   link         String?
   active       Boolean    @default(true)

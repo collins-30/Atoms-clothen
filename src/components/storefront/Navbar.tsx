@@ -1,12 +1,13 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState } from "react";
 import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { Heart, LayoutDashboard, Menu, Search, ShoppingBag, User, X } from "lucide-react";
 import { useStore } from "@/lib/store-context";
 import { useTheme } from "@/lib/theme-context";
 import MarketSelector from "./MarketSelector";
+import TypingSearch from "./TypingSearch";
 
 const NAV = [
   { label: "Women", to: "/shop?gender=women" },
@@ -23,9 +24,7 @@ export default function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
   const [searchOpen, setSearchOpen] = useState(false);
-  const [q, setQ] = useState("");
   const pathname = usePathname();
-  const router = useRouter();
   const isHome = pathname === "/";
 
   useEffect(() => {
@@ -33,15 +32,6 @@ export default function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
-
-  const submitSearch = (e: FormEvent) => {
-    e.preventDefault();
-    if (q.trim()) {
-      router.push(`/shop?q=${encodeURIComponent(q.trim())}`);
-      setSearchOpen(false);
-      setQ("");
-    }
-  };
 
   const solid = scrolled || !isHome || menuOpen;
   const headerBg =
@@ -115,19 +105,9 @@ export default function Navbar({ isAdmin = false }: { isAdmin?: boolean }) {
         </nav>
         {searchOpen && (
           <div className="border-t border-border bg-background">
-            <form onSubmit={submitSearch} className="max-w-[1600px] mx-auto px-4 md:px-8 py-4 flex items-center gap-3">
-              <Search className="w-4 h-4 text-stone-400" />
-              <input
-                autoFocus
-                value={q}
-                onChange={(e) => setQ(e.target.value)}
-                placeholder="Search for products, categories…"
-                className="flex-1 bg-transparent outline-none text-sm text-foreground placeholder:text-stone-400"
-              />
-              <button type="button" onClick={() => setSearchOpen(false)} aria-label="Close search">
-                <X className="w-4 h-4 text-stone-400" />
-              </button>
-            </form>
+            <div className="max-w-[1600px] mx-auto px-4 md:px-8 py-2">
+              <TypingSearch autoFocus onDone={() => setSearchOpen(false)} onClose={() => setSearchOpen(false)} />
+            </div>
           </div>
         )}
       </header>

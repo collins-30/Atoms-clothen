@@ -157,9 +157,9 @@ export default function ProductDetailView({ slug }: { slug: string }) {
   };
 
   const wished = isWished(product.slug);
-  const media = product.media.length > 0 ? product.media : product.images.map((url) => ({ kind: "image" as const, url, poster: null, alt: null }));
+  const media = product.media.length > 0 ? product.media : product.images.map((url) => ({ kind: "image" as const, url, poster: null, alt: null, night: false }));
   const active = media[activeImg] ?? media[0];
-  const firstPhoto = media.find((m) => m.kind === "image")?.url ?? null;
+  const firstPhoto = media.find((m) => m.kind === "image" && !m.night)?.url ?? media.find((m) => m.kind === "image")?.url ?? null;
   const thumbOf = (m: (typeof media)[number]) => (m.kind === "video" ? (m.poster ?? firstPhoto) : m.url);
 
   return (

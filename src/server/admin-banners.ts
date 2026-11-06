@@ -13,6 +13,8 @@ export type AdminBanner = {
   title: string;
   subtitle: string;
   image: string;
+  /** Optional background video; `image` is its poster and fallback. */
+  videoUrl: string;
   buttonText: string;
   link: string;
   active: boolean;
@@ -29,6 +31,7 @@ export async function getAdminBanners(): Promise<AdminBanner[]> {
     title: b.title,
     subtitle: b.subtitle ?? "",
     image: b.image ?? "",
+    videoUrl: b.videoUrl ?? "",
     buttonText: b.buttonText ?? "",
     link: b.link ?? "",
     active: b.active,
@@ -45,6 +48,7 @@ const schema = z.object({
   title: z.string().trim().min(1, "Title is required.").max(120),
   subtitle: z.string().trim().max(190, "Subtitle can be at most 190 characters."),
   image: z.string().trim().max(2000).refine((v) => v === "" || isAllowedImageUrl(v), IMAGE_LINK_ERROR),
+  videoUrl: z.string().trim().max(1000).refine((v) => v === "" || isAllowedImageUrl(v), IMAGE_LINK_ERROR),
   buttonText: z.string().trim().max(40),
   link: z.string().trim().max(500).refine(localOrHttps, "Links must start with / (a page of this store) or https://"),
   active: z.boolean(),
@@ -65,6 +69,7 @@ export async function saveBanner(raw: unknown): Promise<AdminResult> {
     title: d.title,
     subtitle: d.subtitle || null,
     image: d.image || null,
+    videoUrl: d.videoUrl || null,
     buttonText: d.buttonText || null,
     link: d.link || null,
     active: d.active,

@@ -7,12 +7,17 @@ export type StoreMedia = {
   /** Still frame for a video (shown before it plays, and when it can't play). */
   poster: string | null;
   alt: string | null;
+  /** A "night shot": shown on the shop page when Night Mode is on. */
+  night: boolean;
 };
+
+/** What a product card shows in Night Mode. */
+export type NightShot = { kind: "image" | "video"; src: string; poster: string | null };
 
 /** A model video plus the picture to show until (or instead of) it playing. */
 export type VideoSource = { src: string; poster: string | null };
 
-type MediaRow = { kind: "IMAGE" | "VIDEO"; url: string; posterUrl: string | null; alt: string | null };
+type MediaRow = { kind: "IMAGE" | "VIDEO"; url: string; posterUrl: string | null; alt: string | null; night: boolean };
 
 const VIDEO_EXT = /\.(mp4|webm|m4v)(?:[?#]|$)/i;
 
@@ -26,19 +31,31 @@ export const looksLikeVideo = (url: string) => VIDEO_EXT.test(url);
  */
 export function resolveMedia(rows: MediaRow[], legacyImages: string[], legacyVideo: string | null): StoreMedia[] {
   if (rows.length > 0) {
-    return rows.map((r) => ({ kind: r.kind === "VIDEO" ? "video" : "image", url: r.url, poster: r.posterUrl, alt: r.alt }));
+    return rows.map((r) => ({ kind: r.kind === "VIDEO" ? "video" : "image", url: r.url, poster: r.posterUrl, alt: r.alt, night: r.night }));
   }
-  const out: StoreMedia[] = legacyImages.map((url) => ({ kind: "image", url, poster: null, alt: null }));
-  if (legacyVideo) out.push({ kind: "video", url: legacyVideo, poster: null, alt: null });
+  const out: StoreMedia[] = legacyImages.map((url) => ({ kind: "image", url, poster: null, alt: null, night: false }));
+  if (legacyVideo) out.push({ kind: "video", url: legacyVideo, poster: null, alt: null, night: false });
   return out;
 }
 
-/** The product's first model video, with a poster (its own, else the first photo). */
+/** The product's first (daytime) model video, with a poster (its own, else the first photo). */
 export function showcaseVideo(media: StoreMedia[]): VideoSource | null {
-  const video = media.find((m) => m.kind === "video");
+  const video = media.find((m) => m.kind === "video" && !m.night);
   if (!video) return null;
-  return { src: video.url, poster: video.poster ?? media.find((m) => m.kind === "image")?.url ?? null };
+  return { src: video.url, poster: video.poster ?? media.find((m) => m.kind === "image" && !m.night)?.url ?? null };
 }
 
-/** The photo URLs only, in order. Orders, emails and payments still use these. */
-export const imageUrls = (media: StoreMedia[]) => media.filter((m) => m.kind === "image").map((m) => m.url);
+/**
+ * The night shot a product card switches to in Night Mode: a night video when
+ * the card shows a video and one exists, otherwise a night photo, otherwise
+ * any night video. Null when the product has no night shots.
+ */
+export function nightShotFor(media: StoreMedia[], preferVideo: boolean): NightShot | null {
+  const nightPhoto = media.find((m) => m.night && m.kind === "image");
+  const nightVideo = media.find((m) => m.night && m.kind === "video");
+  const pick = preferVideo ? (nightVideo ?? nightPhoto) : (nightPhoto ?? nightVideo);
+  if (!pick) return null;
+  return pick.kind === "video"
+    ? { kind: "video", src: pick.url, poster: pick.poster ?? nightPhoto?.url ?? null }
+    : { kind: "image", src: pick.url, poster: null };
+}

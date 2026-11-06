@@ -88,7 +88,7 @@ export default function ProductsView({ products, categories, markets }: Products
             return (
               <div key={p.id} className="flex flex-wrap items-center gap-4 py-4">
                 <div className="relative w-12 h-14 shrink-0 bg-stone-100 overflow-hidden">
-                  {p.media.some((m) => m.kind === "VIDEO") && (
+                  {p.media.some((m) => m.kind === "VIDEO" && !m.night) && (
                     <span className="absolute bottom-0 inset-x-0 z-10 bg-foreground/80 text-background text-[8px] tracking-[0.15em] uppercase text-center leading-4">Video</span>
                   )}
                   {p.images[0] && (

@@ -2,14 +2,15 @@
 
 import { useState } from "react";
 import { useRouter } from "next/navigation";
-import { Loader2, Pencil, Plus, Trash2 } from "lucide-react";
+import { Film, Loader2, Pencil, Plus, Trash2 } from "lucide-react";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ghostBtn, inputCls, labelCls, NoticeBar, primaryBtn, type Notice } from "@/components/admin/AdminUi";
 import ImageUploadButton from "@/components/admin/ImageUploadButton";
+import BannerVideoField from "@/components/admin/BannerVideoField";
 import { deleteBanner, saveBanner, setBannerActive, type AdminBanner } from "@/server/admin-banners";
 
 type Draft = Omit<AdminBanner, "id" | "displayOrder"> & { id?: string; displayOrder: string };
-const EMPTY: Draft = { type: "PROMO", title: "", subtitle: "", image: "", buttonText: "", link: "", active: true, displayOrder: "0" };
+const EMPTY: Draft = { type: "PROMO", title: "", subtitle: "", image: "", videoUrl: "", buttonText: "", link: "", active: true, displayOrder: "0" };
 
 export default function BannersView({ banners }: { banners: AdminBanner[] }) {
   const router = useRouter();
@@ -62,10 +63,15 @@ export default function BannersView({ banners }: { banners: AdminBanner[] }) {
 
   const row = (b: AdminBanner) => (
     <div key={b.id} className="flex flex-wrap items-center gap-4 py-4">
-      <div className="w-16 h-12 bg-stone-100 overflow-hidden shrink-0">
+      <div className="relative w-16 h-12 bg-stone-100 overflow-hidden shrink-0">
         {b.image && (
           // eslint-disable-next-line @next/next/no-img-element
           <img src={b.image} alt={b.title} className="w-full h-full object-cover" />
+        )}
+        {b.videoUrl && (
+          <span className="absolute bottom-0 inset-x-0 bg-foreground/80 text-background text-[8px] tracking-[0.15em] uppercase text-center leading-4 inline-flex items-center justify-center gap-1">
+            <Film className="w-2.5 h-2.5" /> Video
+          </span>
         )}
       </div>
       <div className="flex-1 min-w-[160px]">
@@ -91,7 +97,7 @@ export default function BannersView({ banners }: { banners: AdminBanner[] }) {
   return (
     <div>
       <div className="flex justify-between items-center mb-6">
-        <p className="text-xs text-stone-500">Hero and promotional banners shown on the homepage.</p>
+        <p className="text-xs text-stone-500">Hero and promotional banners shown on the homepage. Each can have a photo, a video, or both.</p>
         <button onClick={() => open()} className={primaryBtn}>
           <Plus className="w-4 h-4" /> New banner
         </button>
@@ -148,7 +154,7 @@ export default function BannersView({ banners }: { banners: AdminBanner[] }) {
                   <input id="b-sub" value={draft.subtitle} onChange={(e) => setDraft({ ...draft, subtitle: e.target.value })} className={inputCls} placeholder="Autumn / Winter 2026" />
                 </div>
                 <div>
-                  <label htmlFor="b-img" className={labelCls}>Image (link or a path like /banners/hero.jpg)</label>
+                  <label htmlFor="b-img" className={labelCls}>Image (link or a path like /banners/hero.jpg){draft.videoUrl ? " · shown until the video plays" : ""}</label>
                   <div className="flex items-center gap-4">
                     <div className="w-20 h-14 bg-stone-100 overflow-hidden shrink-0">
                       {draft.image && (
@@ -162,6 +168,12 @@ export default function BannersView({ banners }: { banners: AdminBanner[] }) {
                     <ImageUploadButton folder="banners" onUploaded={(url) => setDraft((d) => (d ? { ...d, image: url } : d))} />
                   </div>
                 </div>
+                <BannerVideoField
+                  videoUrl={draft.videoUrl}
+                  poster={draft.image}
+                  onChange={(videoUrl) => setDraft((d) => (d ? { ...d, videoUrl } : d))}
+                  onPoster={(image) => setDraft((d) => (d && !d.image ? { ...d, image } : d))}
+                />
                 <div className="grid sm:grid-cols-2 gap-4">
                   <div>
                     <label htmlFor="b-btn" className={labelCls}>Button text</label>

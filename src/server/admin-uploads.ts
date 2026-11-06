@@ -27,6 +27,7 @@ const MAX_VIDEO_BYTES = 60 * 1024 * 1024;
 const VIDEO_EXT = { "video/mp4": "mp4", "video/webm": "webm" } as const;
 
 const videoSchema = z.object({
+  folder: z.enum(["products", "banners"]).default("products"),
   filename: z.string().max(200),
   contentType: z.enum(["video/mp4", "video/webm"], { message: "Use an MP4 or WebM video. (iPhone .mov files must be exported as MP4 first.)" }),
   size: z.number().int().positive().max(MAX_VIDEO_BYTES, "Videos can be at most 60 MB. Shorten or compress it first."),
@@ -47,8 +48,8 @@ export async function createVideoUpload(raw: unknown): Promise<UploadResult> {
   }
   const parsed = videoSchema.safeParse(raw);
   if (!parsed.success) return { ok: false, error: parsed.error.issues[0]?.message ?? "Use an MP4 or WebM video up to 60 MB." };
-  const { filename, contentType } = parsed.data;
-  const key = `products/videos/${safeBase(filename, "video")}-${randomUUID().slice(0, 8)}.${VIDEO_EXT[contentType]}`;
+  const { folder, filename, contentType } = parsed.data;
+  const key = `${folder}/videos/${safeBase(filename, "video")}-${randomUUID().slice(0, 8)}.${VIDEO_EXT[contentType]}`;
 
   try {
     const { uploadUrl, publicUrl } = await createPresignedUpload(key, contentType);

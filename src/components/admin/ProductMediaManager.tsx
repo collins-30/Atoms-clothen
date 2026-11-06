@@ -1,7 +1,7 @@
 "use client";
 
 import { useRef, useState, type ChangeEvent } from "react";
-import { ArrowLeft, ArrowRight, Film, ImagePlus, Loader2, Plus, Video } from "lucide-react";
+import { ArrowLeft, ArrowRight, Film, ImagePlus, Loader2, Moon, Plus, Video } from "lucide-react";
 import { inputCls, labelCls } from "@/components/admin/AdminUi";
 import type { AdminMedia } from "@/server/admin-products";
 import { IMAGE_TYPES, VIDEO_TYPES, inspectVideo, uploadImageFile, uploadVideoFile } from "@/components/admin/r2-upload";
@@ -39,8 +39,9 @@ export default function ProductMediaManager({
   const posterFor = useRef<number | null>(null);
   const posterInput = useRef<HTMLInputElement>(null);
 
-  const hasVideo = media.some((m) => m.kind === "VIDEO");
-  const hasPhoto = media.some((m) => m.kind === "IMAGE");
+  // Night shots don't count: the card and editorial section use daytime media.
+  const hasVideo = media.some((m) => m.kind === "VIDEO" && !m.night);
+  const hasPhoto = media.some((m) => m.kind === "IMAGE" && !m.night);
 
   const move = (i: number, dir: -1 | 1) =>
     onChange((list) => {
@@ -52,7 +53,7 @@ export default function ProductMediaManager({
     });
 
   const remove = (i: number) => {
-    const removingLastVideo = media[i]?.kind === "VIDEO" && media.filter((m) => m.kind === "VIDEO").length === 1;
+    const removingLastVideo = media[i]?.kind === "VIDEO" && !media[i]?.night && media.filter((m) => m.kind === "VIDEO" && !m.night).length === 1;
     onChange((list) => list.filter((_, j) => j !== i));
     if (removingLastVideo) {
       onCardMedia("IMAGE");
@@ -74,7 +75,7 @@ export default function ProductMediaManager({
           setError(res.error);
           break;
         }
-        onChange((list) => [...list, { kind: "IMAGE", url: res.url, posterUrl: null, alt: null }]);
+        onChange((list) => [...list, { kind: "IMAGE", url: res.url, posterUrl: null, alt: null, night: false }]);
       }
     } finally {
       setBusy("");
@@ -88,7 +89,7 @@ export default function ProductMediaManager({
     setError("");
     setNote("");
     const notes: string[] = [];
-    let hadVideo = media.some((m) => m.kind === "VIDEO");
+    let hadVideo = hasVideo;
     try {
       for (const file of files) {
         setBusy(`Reading ${file.name}…`);
@@ -112,7 +113,7 @@ export default function ProductMediaManager({
           setError(res.error);
           break;
         }
-        onChange((list) => [...list, { kind: "VIDEO", url: res.url, posterUrl, alt: null }]);
+        onChange((list) => [...list, { kind: "VIDEO", url: res.url, posterUrl, alt: null, night: false }]);
         // The first model video becomes the card media automatically; the admin can switch back.
         if (!hadVideo) onCardMedia("VIDEO");
         hadVideo = true;
@@ -157,7 +158,7 @@ export default function ProductMediaManager({
     }
     setError("");
     const kind = looksLikeVideo(v) ? "VIDEO" : "IMAGE";
-    onChange((list) => [...list, { kind, url: v, posterUrl: null, alt: null }]);
+    onChange((list) => [...list, { kind, url: v, posterUrl: null, alt: null, night: false }]);
     setLink("");
   };
 
@@ -189,6 +190,11 @@ export default function ProductMediaManager({
                 <span className="absolute left-1 top-1 text-[9px] tracking-[0.15em] uppercase bg-background/90 px-1.5 py-0.5">
                   {i + 1} · {m.kind === "VIDEO" ? "Video" : "Photo"}
                 </span>
+                {m.night && (
+                  <span className="absolute right-1 bottom-1 w-5 h-5 rounded-full bg-foreground text-background flex items-center justify-center" title="Night shot">
+                    <Moon className="w-3 h-3" />
+                  </span>
+                )}
               </div>
               <div className="mt-1.5 flex items-center gap-1">
                 <button type="button" onClick={() => move(i, -1)} disabled={i === 0} className={tinyBtn} aria-label={`Move item ${i + 1} earlier`}>
@@ -201,6 +207,18 @@ export default function ProductMediaManager({
                   Remove
                 </button>
               </div>
+              <label className="mt-1 flex items-center gap-1.5 text-[10px] uppercase tracking-[0.1em] text-stone-600 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={m.night}
+                  onChange={(e) => {
+                    const night = e.target.checked;
+                    onChange((list) => list.map((x, j) => (j === i ? { ...x, night } : x)));
+                  }}
+                  className="size-3.5 accent-primary"
+                />
+                Night shot
+              </label>
               {m.kind === "VIDEO" && (
                 <button type="button" onClick={() => pickPoster(i)} className="mt-1 text-[10px] uppercase tracking-[0.1em] text-stone-500 hover:text-foreground underline underline-offset-2">
                   {m.posterUrl ? "Change poster" : "Set poster"}
@@ -254,6 +272,8 @@ export default function ProductMediaManager({
       <p className="text-xs text-stone-400">
         Order here = order on the product page. The first photo is the main product image (used in orders and emails).
         Model videos: 3–8 second clips of a model walking, turning or posing in this exact item, MP4, no sound needed.
+        Tick <strong className="font-medium">Night shot</strong> on a photo or video taken in evening light / with flash: the shop
+        switches to it when a visitor turns on Night Mode (without one, the card&apos;s photo is dimmed instead).
       </p>
 
       <fieldset className="border border-stone-200 p-4 space-y-3">

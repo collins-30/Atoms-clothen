@@ -7,6 +7,7 @@ import { ArrowRight } from "lucide-react";
 import { useCatalog } from "@/lib/use-catalog";
 import ProductCard from "@/components/storefront/ProductCard";
 import EditorialVideos from "@/components/storefront/EditorialVideos";
+import ProductVideo from "@/components/storefront/ProductVideo";
 import type { StoreBanner } from "@/lib/storefront-types";
 
 // These two used to be Base44 CDN links. Save them into public/images/ with
@@ -50,14 +51,19 @@ export default function HomeView({ banners }: { banners: StoreBanner[] }) {
     <div>
       {/* Hero */}
       <section className="relative h-[78vh] md:h-[92vh] -mt-16 overflow-hidden">
-        <Image
-          src={heroBanner?.image || HERO}
-          alt={heroBanner?.title || "JAMAS seasonal campaign"}
-          fill
-          priority
-          sizes="100vw"
-          className="object-cover"
-        />
+        {heroBanner?.video ? (
+          // Banner video (Admin › Content). The image shows until it plays.
+          <ProductVideo src={heroBanner.video} poster={heroBanner.image || HERO} alt={heroBanner.title} sizes="100vw" priority controls weight={2} />
+        ) : (
+          <Image
+            src={heroBanner?.image || HERO}
+            alt={heroBanner?.title || "JAMAS seasonal campaign"}
+            fill
+            priority
+            sizes="100vw"
+            className="object-cover"
+          />
+        )}
         <div className="absolute inset-0 bg-gradient-to-t from-black/40 via-black/10 to-black/20" />
         <div className="relative h-full max-w-[1600px] mx-auto px-4 md:px-8 flex flex-col justify-end pb-16 md:pb-24">
           <p className="text-background text-xs tracking-[0.3em] uppercase mb-4 opacity-90">{heroBanner?.subtitle || "Autumn / Winter 2026"}</p>
@@ -87,7 +93,11 @@ export default function HomeView({ banners }: { banners: StoreBanner[] }) {
 
       {/* Promotional banner */}
       <section className="relative h-[60vh] overflow-hidden">
-        <Image src={promoBanner?.image || BANNER} alt={promoBanner?.title || "Winter Edit collection"} fill sizes="100vw" className="object-cover" />
+        {promoBanner?.video ? (
+          <ProductVideo src={promoBanner.video} poster={promoBanner.image || BANNER} alt={promoBanner.title} sizes="100vw" controls weight={1} />
+        ) : (
+          <Image src={promoBanner?.image || BANNER} alt={promoBanner?.title || "Winter Edit collection"} fill sizes="100vw" className="object-cover" />
+        )}
         <div className="absolute inset-0 bg-black/30" />
         <div className="relative h-full max-w-[1600px] mx-auto px-4 md:px-8 flex flex-col items-center justify-center text-center">
           <p className="text-background text-xs tracking-[0.3em] uppercase mb-3 opacity-90">{promoBanner?.subtitle || "The Winter Edit"}</p>
@@ -108,8 +118,12 @@ export default function HomeView({ banners }: { banners: StoreBanner[] }) {
       {/* Editorial split */}
       <section className="max-w-[1600px] mx-auto px-4 md:px-8 py-14 md:py-20 grid md:grid-cols-2 gap-8 md:gap-12 items-center">
         <div className="relative aspect-[4/5] bg-stone-100 overflow-hidden">
-          {craftBanner?.image && (
-            <Image src={craftBanner.image} alt={craftBanner.title} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+          {craftBanner?.video ? (
+            <ProductVideo src={craftBanner.video} poster={craftBanner.image} alt={craftBanner.title} sizes="(min-width: 768px) 50vw, 100vw" controls />
+          ) : (
+            craftBanner?.image && (
+              <Image src={craftBanner.image} alt={craftBanner.title} fill sizes="(min-width: 768px) 50vw, 100vw" className="object-cover" />
+            )
           )}
         </div>
         <div className="md:pl-8">

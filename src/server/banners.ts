@@ -15,6 +15,7 @@ export async function getActiveBanners(): Promise<StoreBanner[]> {
     title: b.title,
     subtitle: b.subtitle,
     image: b.image,
+    video: b.videoUrl,
     buttonText: b.buttonText,
     link: b.link,
   }));
