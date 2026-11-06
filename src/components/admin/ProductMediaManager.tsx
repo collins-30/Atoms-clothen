@@ -88,7 +88,7 @@ export default function ProductMediaManager({
           setError(res.error);
           break;
         }
-        onChange((list) => [...list, { kind: "IMAGE", url: res.url, posterUrl: null, alt: null, night: false, rack: null, aspect: null }]);
+        onChange((list) => [...list, { kind: "IMAGE", url: res.url, posterUrl: null, alt: null, night: false, rack: null, aspect: null, hang: null }]);
       }
     } finally {
       setBusy("");
@@ -126,7 +126,7 @@ export default function ProductMediaManager({
           setError(res.error);
           break;
         }
-        onChange((list) => [...list, { kind: "VIDEO", url: res.url, posterUrl, alt: null, night: false, rack: null, aspect: null }]);
+        onChange((list) => [...list, { kind: "VIDEO", url: res.url, posterUrl, alt: null, night: false, rack: null, aspect: null, hang: null }]);
         // The first model video becomes the card media automatically; the admin can switch back.
         if (!hadVideo) onCardMedia("VIDEO");
         hadVideo = true;
@@ -171,7 +171,7 @@ export default function ProductMediaManager({
     }
     setError("");
     const kind = looksLikeVideo(v) ? "VIDEO" : "IMAGE";
-    onChange((list) => [...list, { kind, url: v, posterUrl: null, alt: null, night: false, rack: null, aspect: null }]);
+    onChange((list) => [...list, { kind, url: v, posterUrl: null, alt: null, night: false, rack: null, aspect: null, hang: null }]);
     setLink("");
   };
 

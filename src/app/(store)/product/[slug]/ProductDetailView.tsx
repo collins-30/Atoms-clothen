@@ -162,7 +162,7 @@ export default function ProductDetailView({ slug }: { slug: string }) {
   const media =
     fromMedia.length > 0
       ? fromMedia
-      : product.images.map((url) => ({ kind: "image" as const, url, poster: null, alt: null, night: false, rack: null, aspect: null }));
+      : product.images.map((url) => ({ kind: "image" as const, url, poster: null, alt: null, night: false, rack: null, aspect: null, hang: null }));
   const active = media[activeImg] ?? media[0];
   const firstPhoto = media.find((m) => m.kind === "image" && !m.night)?.url ?? media.find((m) => m.kind === "image")?.url ?? null;
   const thumbOf = (m: (typeof media)[number]) => (m.kind === "video" ? (m.poster ?? firstPhoto) : m.url);

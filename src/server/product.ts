@@ -47,7 +47,7 @@ export async function getProductDetail(slug: unknown, marketCode: unknown): Prom
     include: {
       category: { select: { slug: true, name: true } },
       variants: { select: { color: true, size: true, sku: true, stock: true } },
-      media: { orderBy: { position: "asc" }, select: { kind: true, url: true, posterUrl: true, alt: true, night: true, rack: true, aspect: true } },
+      media: { orderBy: { position: "asc" }, select: { kind: true, url: true, posterUrl: true, alt: true, night: true, rack: true, aspect: true, hang: true } },
       prices: {
         where: { available: true, market: { code: marketCode, active: true } },
         select: { price: true },

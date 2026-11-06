@@ -13,10 +13,38 @@ export type StoreMedia = {
   rack: "front" | "back" | null;
   /** height / width, when known (rack images). */
   aspect: number | null;
+  /** Where the hanger sits (rack images). */
+  hang: Hang | null;
 };
 
-/** The cut-out images a product hangs on the clothing rail with. */
-export type RackImages = { front: string; back: string | null; aspect: number };
+/**
+ * Where the hanger sits on a rail cut-out, as fractions of the garment's
+ * width: x = hook / neckline centre from the left, y = the hanger's bar
+ * (shoulder line) from the top, w = width of the bar.
+ */
+export type Hang = { x: number; y: number; w: number };
+
+/** Used for rail images saved before hangers were fitted per garment. */
+export const DEFAULT_HANG: Hang = { x: 0.5, y: 0.135, w: 0.52 };
+
+/** A stored hang value, checked (it comes from a JSON column). */
+export function parseHang(v: unknown): Hang | null {
+  if (!v || typeof v !== "object") return null;
+  const { x, y, w } = v as Record<string, unknown>;
+  if (typeof x !== "number" || typeof y !== "number" || typeof w !== "number") return null;
+  if (!(x >= 0 && x <= 1 && y >= 0 && y <= 2 && w >= 0.1 && w <= 1.2)) return null;
+  return { x, y, w };
+}
+
+/** The cut-out images a product hangs on the clothing rail with, and how each sits on its hanger. */
+export type RackImages = {
+  front: string;
+  back: string | null;
+  aspect: number;
+  backAspect: number;
+  hang: Hang;
+  backHang: Hang;
+};
 
 /** What a product card shows in Night Mode. */
 export type NightShot = { kind: "image" | "video"; src: string; poster: string | null };
@@ -32,6 +60,7 @@ type MediaRow = {
   night: boolean;
   rack: "FRONT" | "BACK" | null;
   aspect: number | null;
+  hang?: unknown;
 };
 
 const lower = (r: MediaRow["rack"]) => (r === "FRONT" ? "front" : r === "BACK" ? "back" : null);
@@ -56,10 +85,11 @@ export function resolveMedia(rows: MediaRow[], legacyImages: string[], legacyVid
       night: r.night,
       rack: r.kind === "IMAGE" ? lower(r.rack) : null,
       aspect: r.aspect,
+      hang: parseHang(r.hang),
     }));
   }
-  const out: StoreMedia[] = legacyImages.map((url) => ({ kind: "image", url, poster: null, alt: null, night: false, rack: null, aspect: null }));
-  if (legacyVideo) out.push({ kind: "video", url: legacyVideo, poster: null, alt: null, night: false, rack: null, aspect: null });
+  const out: StoreMedia[] = legacyImages.map((url) => ({ kind: "image", url, poster: null, alt: null, night: false, rack: null, aspect: null, hang: null }));
+  if (legacyVideo) out.push({ kind: "video", url: legacyVideo, poster: null, alt: null, night: false, rack: null, aspect: null, hang: null });
   return out;
 }
 
@@ -89,7 +119,16 @@ export function nightShotFor(media: StoreMedia[], preferVideo: boolean): NightSh
 export function rackImagesFor(media: StoreMedia[]): RackImages | null {
   const front = media.find((m) => m.rack === "front");
   if (!front) return null;
-  return { front: front.url, back: media.find((m) => m.rack === "back")?.url ?? null, aspect: front.aspect && front.aspect > 0 ? front.aspect : 1.3 };
+  const back = media.find((m) => m.rack === "back");
+  const aspect = front.aspect && front.aspect > 0 ? front.aspect : 1.3;
+  return {
+    front: front.url,
+    back: back?.url ?? null,
+    aspect,
+    backAspect: back?.aspect && back.aspect > 0 ? back.aspect : aspect,
+    hang: front.hang ?? DEFAULT_HANG,
+    backHang: back?.hang ?? front.hang ?? DEFAULT_HANG,
+  };
 }
 
 /** Media for the product page gallery: everything except rail cut-outs. */

@@ -7,7 +7,7 @@ import { connection } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { colorList, strings } from "@/lib/json";
-import { resolveMedia } from "@/lib/media";
+import { resolveMedia, type Hang } from "@/lib/media";
 
 // ───────────── Types the admin screens receive ─────────────
 
@@ -48,6 +48,8 @@ export type AdminMedia = {
   /** A cut-out for the clothing rail (FRONT / BACK); null for normal photos and videos. */
   rack: "FRONT" | "BACK" | null;
   aspect: number | null;
+  /** Rail images: where the hanger sits (null = default position). */
+  hang: Hang | null;
 };
 export type AdminMarketLite = { id: string; code: string; name: string; currency: string; symbol: string; active: boolean };
 export type AdminCategoryLite = { id: string; name: string; gender: Gender; parentId: string | null };
@@ -81,7 +83,7 @@ export async function getAdminProducts(): Promise<ProductsData> {
       include: {
         category: { select: { name: true } },
         prices: { select: { marketId: true, price: true, available: true } },
-        media: { orderBy: { position: "asc" }, select: { kind: true, url: true, posterUrl: true, alt: true, night: true, rack: true, aspect: true } },
+        media: { orderBy: { position: "asc" }, select: { kind: true, url: true, posterUrl: true, alt: true, night: true, rack: true, aspect: true, hang: true } },
       },
     }),
     prisma.category.findMany({
@@ -125,6 +127,7 @@ export async function getAdminProducts(): Promise<ProductsData> {
         night: m.night,
         rack: m.rack === "front" ? ("FRONT" as const) : m.rack === "back" ? ("BACK" as const) : null,
         aspect: m.aspect,
+        hang: m.hang,
       })),
       cardMedia: p.cardMedia,
       editorial: p.editorial,
@@ -150,6 +153,10 @@ const mediaSchema = z.object({
   night: z.boolean().default(false),
   rack: z.enum(["FRONT", "BACK"]).nullable().default(null),
   aspect: z.number().positive().max(20).nullable().default(null),
+  hang: z
+    .object({ x: z.number().min(0).max(1), y: z.number().min(0).max(2), w: z.number().min(0.1).max(1.2) })
+    .nullable()
+    .default(null),
 });
 
 const productSchema = z.object({
@@ -211,7 +218,7 @@ export async function saveProduct(raw: unknown): Promise<Ok | Fail> {
   }
 
   const media = (
-    d.media ?? d.images.map((url) => ({ kind: "IMAGE" as const, url, posterUrl: null, alt: null, night: false, rack: null, aspect: null }))
+    d.media ?? d.images.map((url) => ({ kind: "IMAGE" as const, url, posterUrl: null, alt: null, night: false, rack: null, aspect: null, hang: null }))
   ).map((m) => (m.kind === "VIDEO" ? { ...m, rack: null } : m)); // only photos can hang on the rail
   // Daytime photos first, so the main product image is never a night shot.
   // Rail cut-outs are left out: orders, emails and payments use real photos.
@@ -226,6 +233,8 @@ export async function saveProduct(raw: unknown): Promise<Ok | Fail> {
     night: m.rack ? false : m.night,
     rack: m.rack,
     aspect: m.aspect,
+    // undefined (not null) leaves the JSON column empty
+    hang: m.rack && m.hang ? m.hang : undefined,
     position,
   }));
 

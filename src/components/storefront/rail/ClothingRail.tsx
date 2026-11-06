@@ -2,9 +2,8 @@
 
 import { useEffect, useRef, useState, type CSSProperties, type KeyboardEvent } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { ArrowLeft, ArrowRight } from "lucide-react";
-import Hanger from "@/components/storefront/rail/Hanger";
+import HungGarment, { garmentTop, hungHeight } from "@/components/storefront/rail/HungGarment";
 import RailFocus from "@/components/storefront/rail/RailFocus";
 import { formatPrice, type PriceMarket } from "@/lib/format";
 import type { StoreProduct } from "@/lib/storefront-types";
@@ -17,8 +16,6 @@ const SLOT = 50;
 const GW_M = 132;
 const MAX_H_M = 264;
 const RAIL_TOP = 30;
-const HANGER_RATIO = 0.62; // hanger width / garment width
-const COLLAR = 0.5; // garment top sits this far down the hanger (bar hidden behind the collar)
 
 const tiltFor = (id: string) => {
   let h = 0;
@@ -26,10 +23,11 @@ const tiltFor = (id: string) => {
   return (((h >>> 0) % 160) / 100 - 0.8).toFixed(2); // -0.8deg … 0.8deg
 };
 
-/** Garment size for a cut-out of this aspect (height / width), never taller than maxH. */
-const fit = (aspect: number, gw: number, maxH: number) => {
-  const w = Math.min(gw, maxH / aspect);
-  return { w, h: w * aspect };
+/** Garment width and total hung height (hook to hem) for a cut-out, never taller than maxH. */
+const fit = (p: StoreProduct, gw: number, maxH: number) => {
+  const rel = hungHeight(p.rack!.aspect, p.rack!.hang);
+  const w = Math.min(gw, maxH / rel);
+  return { w, h: w * rel };
 };
 
 /**
@@ -69,11 +67,11 @@ export default function ClothingRail({
 
   if (items.length === 0) return null;
 
-  const sizes = items.map((p) => ({ d: fit(p.rack!.aspect, GW, MAX_H), m: fit(p.rack!.aspect, GW_M, MAX_H_M) }));
+  const sizes = items.map((p) => ({ d: fit(p, GW, MAX_H), m: fit(p, GW_M, MAX_H_M) }));
   const tallest = Math.max(...sizes.map((s) => s.d.h));
   const tallestM = Math.max(...sizes.map((s) => s.m.h));
-  const height = RAIL_TOP + GW * HANGER_RATIO * (64 / 120) * COLLAR + tallest + 56;
-  const heightM = RAIL_TOP + GW_M * HANGER_RATIO * (64 / 120) * COLLAR + tallestM + 48;
+  const height = RAIL_TOP + tallest + 56;
+  const heightM = RAIL_TOP + tallestM + 48;
 
   const label = (p: StoreProduct) => {
     const price = priceMap[p.slug];
@@ -150,26 +148,19 @@ export default function ClothingRail({
                         aria-label={`${label(p)}. Look closer`}
                         className="rail-garment relative block shrink-0 outline-none focus-visible:ring-2 focus-visible:ring-foreground/40 focus-visible:ring-offset-4 focus-visible:ring-offset-transparent"
                       >
-                        <Hanger className="relative mx-auto block" style={{ width: `${HANGER_RATIO * 100}%` }} />
-                        <span className="block relative" style={{ marginTop: `-${(HANGER_RATIO * (64 / 120) * (1 - COLLAR) * 100).toFixed(2)}%` }}>
-                          <Image
-                            src={p.rack!.front}
-                            alt=""
-                            width={Math.round(d.w * 2)}
-                            height={Math.round(d.h * 2)}
-                            sizes="(min-width: 768px) 190px, 132px"
-                            draggable={false}
-                            className="block w-full h-auto select-none"
-                          />
-                          {!p.inStock && (
-                            <span className="absolute top-[6%] left-[62%] flex flex-col items-center pointer-events-none" aria-hidden="true">
+                        <HungGarment src={p.rack!.front} aspect={p.rack!.aspect} hang={p.rack!.hang} sizes="(min-width: 768px) 190px, 132px" />
+                        {!p.inStock && (
+                          // A swing tag tied on just below the collar.
+                          <span className="absolute inset-x-0 top-0 pointer-events-none" aria-hidden="true">
+                            <span className="block" style={{ paddingTop: `${((garmentTop(p.rack!.hang) + 0.04) * 100).toFixed(2)}%` }} />
+                            <span className="absolute flex flex-col items-center" style={{ left: `${Math.min(70, p.rack!.hang.x * 100 + 12)}%`, top: "auto" }}>
                               <span className="w-px h-4 bg-stone-500/70" />
                               <span className="rotate-[7deg] bg-background border border-stone-300 shadow-sm px-1.5 py-0.5 text-[9px] leading-none tracking-[0.15em] uppercase text-foreground whitespace-nowrap">
                                 Sold out
                               </span>
                             </span>
-                          )}
-                        </span>
+                          </span>
+                        )}
                       </button>
                     </div>
                   </li>

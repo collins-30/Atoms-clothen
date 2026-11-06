@@ -257,6 +257,7 @@ model ProductMedia {
   night     Boolean   @default(false) // a "night shot", shown on the shop page when Night Mode is on
   rack      RackSide? // a cut-out garment image for the clothing rail (front or back); not shown in the gallery
   aspect    Float? // height / width of the image, so the rail can lay garments out before they load
+  hang      Json? // rail images: where the hanger sits, { x, y, w } as fractions of the width
   position  Int       @default(0)
   createdAt DateTime  @default(now())
 

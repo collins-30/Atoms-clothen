@@ -2,10 +2,9 @@
 
 import { useEffect, useState } from "react";
 import Link from "next/link";
-import Image from "next/image";
 import { Dialog as DialogPrimitive } from "@base-ui/react/dialog";
 import { ArrowLeft, ArrowRight, Heart, Loader2, X } from "lucide-react";
-import Hanger from "@/components/storefront/rail/Hanger";
+import HungGarment, { hungHeight } from "@/components/storefront/rail/HungGarment";
 import { useStore } from "@/lib/store-context";
 import { formatPrice, type PriceMarket } from "@/lib/format";
 import { getProductDetail, type ProductDetailResult } from "@/server/product";
@@ -109,26 +108,25 @@ export default function RailFocus({
 function Stage({ product }: { product: StoreProduct }) {
   const [side, setSide] = useState<"front" | "back">("front");
   const rack = product.rack!;
-  const src = side === "back" && rack.back ? rack.back : rack.front;
-  // Fit inside the stage: at most ~70% of its height, garment-proportioned.
-  const widthPct = Math.min(58, 62 / rack.aspect + 8);
+  const isBack = side === "back" && !!rack.back;
+  const src = isBack ? rack.back! : rack.front;
+  const aspect = isBack ? rack.backAspect : rack.aspect;
+  const hang = isBack ? rack.backHang : rack.hang;
+  // Fit inside the stage (hook to hem), garment-proportioned.
+  const widthPct = Math.min(58, 64 / hungHeight(aspect, hang) + 8);
   return (
     <>
-      <div className="absolute left-1/2 -translate-x-1/2 z-10 animate-in fade-in-0 zoom-in-95 duration-500" style={{ top: 35, width: `${widthPct}%`, maxWidth: 360 }}>
-        <Hanger className="relative mx-auto block" style={{ width: "62%" }} />
-        <div className="relative" style={{ marginTop: "-16.5%" }}>
-          <Image
-            key={src}
-            src={src}
-            alt={`${product.name}, ${side}`}
-            width={720}
-            height={Math.round(720 * rack.aspect)}
-            sizes="(min-width: 768px) 360px, 60vw"
-            priority
-            className="rail-cutout block w-full h-auto select-none animate-in fade-in-0 duration-300"
-            draggable={false}
-          />
-        </div>
+      <div className="absolute left-1/2 -translate-x-1/2 z-10 animate-in fade-in-0 zoom-in-95 duration-500" style={{ top: 32, width: `${widthPct}%`, maxWidth: 360 }}>
+        <HungGarment
+          key={src}
+          src={src}
+          aspect={aspect}
+          hang={hang}
+          alt={`${product.name}, ${side}`}
+          sizes="(min-width: 768px) 360px, 60vw"
+          priority
+          imgClassName="animate-in fade-in-0 duration-300"
+        />
       </div>
       {rack.back && (
         <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-20 flex border border-foreground bg-background/90" role="group" aria-label="Side">
@@ -154,13 +152,10 @@ function Ghost({ product, side }: { product: StoreProduct; side: "left" | "right
   const rack = product.rack!;
   return (
     <div
-      className={`absolute top-[35px] w-[26%] max-w-[180px] opacity-40 blur-[5px] pointer-events-none ${side === "left" ? "-left-[6%]" : "-right-[6%]"}`}
+      className={`absolute top-[32px] w-[26%] max-w-[180px] opacity-40 blur-[5px] pointer-events-none ${side === "left" ? "-left-[6%]" : "-right-[6%]"}`}
       aria-hidden="true"
     >
-      <Hanger className="relative mx-auto block" style={{ width: "62%" }} />
-      <div style={{ marginTop: "-16.5%" }}>
-        <Image src={rack.front} alt="" width={360} height={Math.round(360 * rack.aspect)} sizes="180px" className="block w-full h-auto" />
-      </div>
+      <HungGarment src={rack.front} aspect={rack.aspect} hang={rack.hang} sizes="180px" />
     </div>
   );
 }

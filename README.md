@@ -74,19 +74,23 @@ so it disappears as soon as they're restocked.
 
 To put a product on the rail: Admin › Products › edit › **Clothing rail** ›
 Upload a photo of the garment alone on a plain white or light background
-(or a transparent PNG). The background is removed in the browser and the
-result is previewed on the rail before saving; use the slider if background
-is left or part of the garment disappears, and "Check on a dark background"
-for white garments. Photos without a cast shadow give the cleanest result.
-A back view is optional. Rail images don't appear in the product gallery,
+(or a transparent PNG). In the browser the background is removed, the edges
+are cleaned (no white fringe, specks dropped; optional soft-shadow removal)
+and the hanger is fitted to the collar and shoulders. Everything is previewed
+on the rail before saving: use the slider if background is left or part of
+the garment disappears, "Check on a dark background" for white garments, and
+the Hanger sliders (or **Adjust hanger** later) to nudge the fit. A back view
+is optional. Best results: the garment photographed hanging, on a plain wall,
+without a cast shadow; or a cut-out made with Photoroom / remove.bg. Rail images don't appear in the product gallery,
 cart, orders or emails, and product videos are unaffected.
 
 ### Database
 
 Migrations `20261106090000_product_media`,
-`20261106130000_banner_video_night_media` and `20261106150000_rack_images` only add a `ProductMedia` table and
+`20261106130000_banner_video_night_media`, `20261106150000_rack_images` and
+`20261106170000_rack_hang` only add a `ProductMedia` table and
 columns with defaults (`Product.cardMedia`, `Product.editorial`,
-`ProductMedia.night`, `ProductMedia.rack`, `ProductMedia.aspect`, `Banner.videoUrl`). Existing products keep
+`ProductMedia.night`, `ProductMedia.rack`, `ProductMedia.aspect`, `ProductMedia.hang`, `Banner.videoUrl`). Existing products keep
 working unchanged: until a product is saved again, its media comes from its
 `images` list. Run `npx prisma migrate deploy` on the production database.
 

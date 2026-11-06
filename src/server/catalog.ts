@@ -40,7 +40,7 @@ export async function getCatalog(marketCode: string): Promise<Catalog> {
       category: { select: { slug: true, name: true, displayOrder: true } },
       prices: { where: { marketId: market.id, available: true }, select: { price: true } },
       variants: { select: { stock: true } },
-      media: { orderBy: { position: "asc" }, select: { kind: true, url: true, posterUrl: true, alt: true, night: true, rack: true, aspect: true } },
+      media: { orderBy: { position: "asc" }, select: { kind: true, url: true, posterUrl: true, alt: true, night: true, rack: true, aspect: true, hang: true } },
     },
   });
 
