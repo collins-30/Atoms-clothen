@@ -105,7 +105,10 @@ export default function ProductFormDialog({
         colors: parseColors(form.colors),
         materials: form.materials,
         care: form.care,
-        images: [...media.filter((m) => m.kind === "IMAGE" && !m.night), ...media.filter((m) => m.kind === "IMAGE" && m.night)]
+        images: [
+          ...media.filter((m) => m.kind === "IMAGE" && !m.night && !m.rack),
+          ...media.filter((m) => m.kind === "IMAGE" && m.night && !m.rack),
+        ]
           .map((m) => m.url)
           .slice(0, 20),
         media,

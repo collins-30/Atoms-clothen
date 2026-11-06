@@ -121,3 +121,50 @@ h1, h2, h3, h4 {
   animation: jamas-caret 1s steps(1) infinite;
 }
 @keyframes jamas-caret { 50% { opacity: 0; } }
+
+/* ── Clothing rail ─────────────────────────────────────────────────────────
+   Garments hang side-on from a chrome rail and turn to face the visitor on
+   hover/focus (desktop). On phones they hang facing forward in a swipeable
+   row. Sizes come from CSS variables set per garment by ClothingRail.tsx. */
+.rail-wall {
+  background:
+    radial-gradient(ellipse 70% 60% at 50% 20%, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0) 70%),
+    linear-gradient(180deg, #f1f0ec 0%, #ecebe6 100%);
+}
+.rail-pole {
+  height: 7px;
+  border-radius: 999px;
+  background: linear-gradient(180deg, #fafafa 0%, #c9c9c5 35%, #8d8d89 60%, #d4d4d0 100%);
+  box-shadow: 0 6px 10px -4px rgba(0, 0, 0, 0.25);
+}
+.rail-bracket {
+  width: 5px;
+  border-radius: 3px;
+  background: linear-gradient(90deg, #a5a5a1, #e6e6e3 50%, #9a9a96);
+}
+.rail-scroll { scrollbar-width: none; }
+.rail-scroll::-webkit-scrollbar { display: none; }
+.rail-item {
+  width: var(--slot-m);
+  transition: width 0.55s cubic-bezier(0.22, 1, 0.36, 1);
+}
+.rail-garment {
+  width: var(--gw-m);
+  transform-origin: 50% 0;
+  transform: rotateZ(var(--tilt));
+  transition: transform 0.7s cubic-bezier(0.22, 1.25, 0.36, 1), filter 0.5s ease;
+}
+/* a fine contact edge (keeps white garments visible on the pale wall) + a soft wall shadow */
+.rail-garment img,
+.rail-cutout { filter: drop-shadow(0 0 0.7px rgba(0, 0, 0, 0.38)) drop-shadow(8px 16px 12px rgba(0, 0, 0, 0.18)); }
+@media (min-width: 768px) {
+  .rail-item { width: var(--slot); }
+  .rail-garment {
+    width: var(--gw);
+    transform: perspective(1100px) rotateY(var(--turn)) rotateZ(var(--tilt)) translateZ(var(--lift));
+    filter: brightness(var(--bright));
+  }
+}
+@media (prefers-reduced-motion: reduce) {
+  .rail-item, .rail-garment { transition: none; }
+}

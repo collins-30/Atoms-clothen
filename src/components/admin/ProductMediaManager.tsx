@@ -6,6 +6,7 @@ import { inputCls, labelCls } from "@/components/admin/AdminUi";
 import type { AdminMedia } from "@/server/admin-products";
 import { IMAGE_TYPES, VIDEO_TYPES, inspectVideo, uploadImageFile, uploadVideoFile } from "@/components/admin/r2-upload";
 import { looksLikeVideo } from "@/lib/media";
+import RackImageEditor from "@/components/admin/RackImageEditor";
 
 const btn =
   "inline-flex items-center gap-2 h-10 px-5 border border-stone-300 text-xs tracking-[0.15em] uppercase transition-colors hover:border-foreground focus-within:border-foreground";
@@ -41,15 +42,27 @@ export default function ProductMediaManager({
 
   // Night shots don't count: the card and editorial section use daytime media.
   const hasVideo = media.some((m) => m.kind === "VIDEO" && !m.night);
-  const hasPhoto = media.some((m) => m.kind === "IMAGE" && !m.night);
+  const hasPhoto = media.some((m) => m.kind === "IMAGE" && !m.night && !m.rack);
+  // Rail cut-outs live in their own section below; the gallery list skips them.
+  const gallery = media.map((m, i) => ({ m, i })).filter(({ m }) => !m.rack);
+  const rackFront = media.find((m) => m.rack === "FRONT") ?? null;
+  const rackBack = media.find((m) => m.rack === "BACK") ?? null;
 
+  // Swap with the previous / next gallery item (rail images don't take part).
   const move = (i: number, dir: -1 | 1) =>
     onChange((list) => {
-      const j = i + dir;
+      let j = i + dir;
+      while (j >= 0 && j < list.length && list[j].rack) j += dir;
       if (j < 0 || j >= list.length) return list;
       const next = [...list];
       [next[i], next[j]] = [next[j], next[i]];
       return next;
+    });
+
+  const setRack = (side: "FRONT" | "BACK", item: AdminMedia | null) =>
+    onChange((list) => {
+      const rest = list.filter((m) => m.rack !== side);
+      return item ? [...rest, item] : rest;
     });
 
   const remove = (i: number) => {
@@ -75,7 +88,7 @@ export default function ProductMediaManager({
           setError(res.error);
           break;
         }
-        onChange((list) => [...list, { kind: "IMAGE", url: res.url, posterUrl: null, alt: null, night: false }]);
+        onChange((list) => [...list, { kind: "IMAGE", url: res.url, posterUrl: null, alt: null, night: false, rack: null, aspect: null }]);
       }
     } finally {
       setBusy("");
@@ -113,7 +126,7 @@ export default function ProductMediaManager({
           setError(res.error);
           break;
         }
-        onChange((list) => [...list, { kind: "VIDEO", url: res.url, posterUrl, alt: null, night: false }]);
+        onChange((list) => [...list, { kind: "VIDEO", url: res.url, posterUrl, alt: null, night: false, rack: null, aspect: null }]);
         // The first model video becomes the card media automatically; the admin can switch back.
         if (!hadVideo) onCardMedia("VIDEO");
         hadVideo = true;
@@ -158,7 +171,7 @@ export default function ProductMediaManager({
     }
     setError("");
     const kind = looksLikeVideo(v) ? "VIDEO" : "IMAGE";
-    onChange((list) => [...list, { kind, url: v, posterUrl: null, alt: null, night: false }]);
+    onChange((list) => [...list, { kind, url: v, posterUrl: null, alt: null, night: false, rack: null, aspect: null }]);
     setLink("");
   };
 
@@ -167,7 +180,7 @@ export default function ProductMediaManager({
       <div>
         <p className={labelCls}>Photos &amp; model videos</p>
         <ol className="flex flex-wrap gap-3">
-          {media.map((m, i) => (
+          {gallery.map(({ m, i }, n) => (
             <li key={`${m.url}-${i}`} className="w-24">
               <div className="relative w-24 h-32 border border-stone-200 bg-stone-100 overflow-hidden">
                 {m.kind === "VIDEO" ? (
@@ -181,14 +194,14 @@ export default function ProductMediaManager({
                     onMouseEnter={(e) => void e.currentTarget.play().catch(() => {})}
                     onMouseLeave={(e) => e.currentTarget.pause()}
                     className="w-full h-full object-cover"
-                    aria-label={`Model video ${i + 1}`}
+                    aria-label={`Model video ${n + 1}`}
                   />
                 ) : (
                   // eslint-disable-next-line @next/next/no-img-element
                   <img src={m.url} alt="" className="w-full h-full object-cover" />
                 )}
                 <span className="absolute left-1 top-1 text-[9px] tracking-[0.15em] uppercase bg-background/90 px-1.5 py-0.5">
-                  {i + 1} · {m.kind === "VIDEO" ? "Video" : "Photo"}
+                  {n + 1} · {m.kind === "VIDEO" ? "Video" : "Photo"}
                 </span>
                 {m.night && (
                   <span className="absolute right-1 bottom-1 w-5 h-5 rounded-full bg-foreground text-background flex items-center justify-center" title="Night shot">
@@ -197,10 +210,10 @@ export default function ProductMediaManager({
                 )}
               </div>
               <div className="mt-1.5 flex items-center gap-1">
-                <button type="button" onClick={() => move(i, -1)} disabled={i === 0} className={tinyBtn} aria-label={`Move item ${i + 1} earlier`}>
+                <button type="button" onClick={() => move(i, -1)} disabled={n === 0} className={tinyBtn} aria-label={`Move item ${n + 1} earlier`}>
                   <ArrowLeft className="w-3 h-3" />
                 </button>
-                <button type="button" onClick={() => move(i, 1)} disabled={i === media.length - 1} className={tinyBtn} aria-label={`Move item ${i + 1} later`}>
+                <button type="button" onClick={() => move(i, 1)} disabled={n === gallery.length - 1} className={tinyBtn} aria-label={`Move item ${n + 1} later`}>
                   <ArrowRight className="w-3 h-3" />
                 </button>
                 <button type="button" onClick={() => remove(i)} className="ml-auto text-[10px] uppercase tracking-[0.1em] text-stone-500 hover:text-rose-700">
@@ -226,7 +239,7 @@ export default function ProductMediaManager({
               )}
             </li>
           ))}
-          {media.length === 0 && <li className="text-xs text-stone-400">No photos or videos yet.</li>}
+          {gallery.length === 0 && <li className="text-xs text-stone-400">No photos or videos yet.</li>}
         </ol>
       </div>
 
@@ -300,6 +313,8 @@ export default function ProductMediaManager({
           Feature this model video in the large editorial section on the home page
         </label>
       </fieldset>
+
+      <RackImageEditor front={rackFront} back={rackBack} onChange={setRack} />
     </div>
   );
 }

@@ -1,12 +1,14 @@
 "use client";
 
 import { useMemo, useState } from "react";
-import { useSearchParams } from "next/navigation";
-import { Moon, SlidersHorizontal, X } from "lucide-react";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { LayoutGrid, Moon, SlidersHorizontal, X } from "lucide-react";
 import { useCatalog } from "@/lib/use-catalog";
 import ProductCard from "@/components/storefront/ProductCard";
 import { NightModeContext, useNightModeSetting } from "@/lib/night-mode";
 import TypingSearch from "@/components/storefront/TypingSearch";
+import ClothingRail from "@/components/storefront/rail/ClothingRail";
+import { groupForRails } from "@/components/storefront/rail/RailShowcase";
 
 const SORTS = [
   { value: "recommended", label: "Recommended" },
@@ -20,6 +22,16 @@ type SortValue = (typeof SORTS)[number]["value"];
 export default function ShopView() {
   const { products, priceMap, market, loading } = useCatalog();
   const params = useSearchParams();
+  const router = useRouter();
+  const pathname = usePathname();
+  const view = params.get("view") === "rail" ? "rail" : "grid";
+  const setView = (v: "grid" | "rail") => {
+    const next = new URLSearchParams(params.toString());
+    if (v === "rail") next.set("view", "rail");
+    else next.delete("view");
+    const qs = next.toString();
+    router.replace(qs ? `${pathname}?${qs}` : pathname, { scroll: false });
+  };
   const [sort, setSort] = useState<SortValue>("recommended");
   const [showFilters, setShowFilters] = useState(false);
   const [nightOn, setNightOn] = useNightModeSetting();
@@ -51,7 +63,7 @@ export default function ShopView() {
     return [...set];
   }, [products]);
 
-  const [selCategory, setSelCategory] = useState("");
+  const [selCategory, setSelCategory] = useState(() => params.get("category") || "");
   const [selColors, setSelColors] = useState<string[]>([]);
   const [selSizes, setSelSizes] = useState<string[]>([]);
   const [inStockOnly, setInStockOnly] = useState(false);
@@ -89,6 +101,13 @@ export default function ShopView() {
     else if (sort === "popular") sorted.sort((a, b) => Number(b.isBestseller) - Number(a.isBestseller));
     return sorted;
   }, [products, priceMap, genderParam, newOnly, q, selCategory, selColors, selSizes, inStockOnly, maxPrice, sort]);
+
+  // Rail view: products with a rail image, grouped by category; the rest stay in the grid.
+  const railGroups = useMemo(() => groupForRails(filtered), [filtered]);
+  const offRail = useMemo(() => {
+    const onRail = new Set(railGroups.flatMap((g) => g.products.map((p) => p.id)));
+    return filtered.filter((p) => !onRail.has(p.id));
+  }, [filtered, railGroups]);
 
   const title = genderParam ? (genderParam === "women" ? "Women" : "Men") : newOnly ? "New Arrivals" : q ? `Search: "${q}"` : "All Collections";
 
@@ -146,12 +165,33 @@ export default function ShopView() {
         <h1 className="text-3xl md:text-5xl font-bold tracking-tight" style={{ fontFamily: "var(--font-heading)" }}>{title}</h1>
       </div>
 
-      <div className="flex items-center justify-between mb-6 pb-4 border-b border-stone-200">
+      <div className="flex flex-wrap items-center justify-between gap-y-2 mb-6 pb-4 border-b border-stone-200">
         <button onClick={() => setShowFilters(true)} className="flex items-center gap-2 text-xs tracking-[0.2em] uppercase md:hidden">
           <SlidersHorizontal className="w-4 h-4" /> Filters
         </button>
         <p className="hidden md:block text-sm text-stone-500">{filtered.length} pieces</p>
-        <div className="flex items-center gap-5 sm:gap-8">
+        <div className="flex flex-wrap items-center justify-end gap-x-5 gap-y-2 sm:gap-x-8">
+          <div className="flex border border-stone-300" role="group" aria-label="Layout">
+            <button
+              type="button"
+              onClick={() => setView("grid")}
+              aria-pressed={view === "grid"}
+              className={`h-9 px-3 inline-flex items-center gap-1.5 text-[10px] tracking-[0.2em] uppercase ${view === "grid" ? "bg-foreground text-background" : "text-foreground hover:bg-stone-100"}`}
+            >
+              <LayoutGrid className="w-3.5 h-3.5" strokeWidth={1.6} aria-hidden="true" /> Grid
+            </button>
+            <button
+              type="button"
+              onClick={() => setView("rail")}
+              aria-pressed={view === "rail"}
+              className={`h-9 px-3 inline-flex items-center gap-1.5 text-[10px] tracking-[0.2em] uppercase ${view === "rail" ? "bg-foreground text-background" : "text-foreground hover:bg-stone-100"}`}
+            >
+              <svg viewBox="0 0 16 16" className="w-3.5 h-3.5" aria-hidden="true" fill="none" stroke="currentColor" strokeWidth="1.3" strokeLinecap="round">
+                <path d="M1.5 3h13M4 3v2.5M8 3v2.5M12 3v2.5M2.5 13l1.5-7.5L5.5 13M6.5 13 8 5.5 9.5 13M10.5 12l1.5-6.5 1.5 6.5" />
+              </svg>
+              Rail
+            </button>
+          </div>
           <button
             type="button"
             role="switch"
@@ -188,6 +228,34 @@ export default function ShopView() {
             </div>
           ) : filtered.length === 0 ? (
             <div className="py-24 text-center text-stone-500">No pieces match your filters.</div>
+          ) : view === "rail" ? (
+            // Rail view: one rail per category for pieces with a rail image,
+            // then everything else (photos and model videos) in the grid below.
+            <div className="space-y-14">
+              {railGroups.length === 0 ? (
+                <p className="py-10 text-center text-sm text-stone-500 border border-dashed border-stone-300">
+                  None of these pieces are on the rail yet. They&apos;re all in the grid below.
+                </p>
+              ) : (
+                railGroups.map((g) => (
+                  <ClothingRail key={g.key} title={railGroups.length > 1 ? g.label : undefined} products={g.products} priceMap={priceMap} market={market} />
+                ))
+              )}
+              {offRail.length > 0 && (
+                <div>
+                  {railGroups.length > 0 && (
+                    <h2 className="text-lg md:text-2xl font-bold tracking-tight mb-6" style={{ fontFamily: "var(--font-heading)" }}>
+                      More pieces
+                    </h2>
+                  )}
+                  <NightModeContext.Provider value={nightMode}>
+                    <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-10 md:gap-x-6">
+                      {offRail.map((p) => <ProductCard key={p.id} product={p} priceMap={priceMap} market={market} />)}
+                    </div>
+                  </NightModeContext.Provider>
+                </div>
+              )}
+            </div>
           ) : (
             <NightModeContext.Provider value={nightMode}>
               <div className="grid grid-cols-2 lg:grid-cols-3 gap-x-4 gap-y-10 md:gap-x-6">

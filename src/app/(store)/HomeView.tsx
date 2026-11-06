@@ -8,6 +8,7 @@ import { useCatalog } from "@/lib/use-catalog";
 import ProductCard from "@/components/storefront/ProductCard";
 import EditorialVideos from "@/components/storefront/EditorialVideos";
 import ProductVideo from "@/components/storefront/ProductVideo";
+import RailShowcase from "@/components/storefront/rail/RailShowcase";
 import type { StoreBanner } from "@/lib/storefront-types";
 
 // These two used to be Base44 CDN links. Save them into public/images/ with
@@ -90,6 +91,9 @@ export default function HomeView({ banners }: { banners: StoreBanner[] }) {
 
       {/* Editorial model videos (products ticked "Feature … editorial section" in the admin) */}
       {!loading && <EditorialVideos products={editorial} priceMap={priceMap} market={market} />}
+
+      {/* The Rail: pieces with a rail image (Admin › Products › Clothing rail), one category at a time */}
+      {!loading && <RailShowcase products={products} priceMap={priceMap} market={market} />}
 
       {/* Promotional banner */}
       <section className="relative h-[60vh] overflow-hidden">

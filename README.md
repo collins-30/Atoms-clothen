@@ -62,12 +62,31 @@ The search box types out "Try searching for… <category>", cycling through the
 names of active categories that have published products. It stops as soon as
 the visitor types.
 
+### The clothing rail
+
+Products can hang on a chrome clothing rail: on the home page ("The Rail",
+one category at a time with tabs) and on the shop page with the **Grid / Rail**
+switch (one rail per category, then everything without a rail image in the
+grid below). Hover turns a garment to face you; click/tap opens a closer look
+with Front/Back, colours, live sizes and Add to bag (same cart as the product
+page). Sold-out pieces hang with a "Sold out" tag, worked out from live stock,
+so it disappears as soon as they're restocked.
+
+To put a product on the rail: Admin › Products › edit › **Clothing rail** ›
+Upload a photo of the garment alone on a plain white or light background
+(or a transparent PNG). The background is removed in the browser and the
+result is previewed on the rail before saving; use the slider if background
+is left or part of the garment disappears, and "Check on a dark background"
+for white garments. Photos without a cast shadow give the cleanest result.
+A back view is optional. Rail images don't appear in the product gallery,
+cart, orders or emails, and product videos are unaffected.
+
 ### Database
 
-Migrations `20261106090000_product_media` and
-`20261106130000_banner_video_night_media` only add a `ProductMedia` table and
+Migrations `20261106090000_product_media`,
+`20261106130000_banner_video_night_media` and `20261106150000_rack_images` only add a `ProductMedia` table and
 columns with defaults (`Product.cardMedia`, `Product.editorial`,
-`ProductMedia.night`, `Banner.videoUrl`). Existing products keep
+`ProductMedia.night`, `ProductMedia.rack`, `ProductMedia.aspect`, `Banner.videoUrl`). Existing products keep
 working unchanged: until a product is saved again, its media comes from its
 `images` list. Run `npx prisma migrate deploy` on the production database.
 

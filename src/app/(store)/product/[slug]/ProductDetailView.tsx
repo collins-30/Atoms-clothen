@@ -4,6 +4,7 @@ import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
 import ProductVideo from "@/components/storefront/ProductVideo";
+import { galleryMedia } from "@/lib/media";
 import {
   Heart,
   Minus,
@@ -157,7 +158,11 @@ export default function ProductDetailView({ slug }: { slug: string }) {
   };
 
   const wished = isWished(product.slug);
-  const media = product.media.length > 0 ? product.media : product.images.map((url) => ({ kind: "image" as const, url, poster: null, alt: null, night: false }));
+  const fromMedia = galleryMedia(product.media);
+  const media =
+    fromMedia.length > 0
+      ? fromMedia
+      : product.images.map((url) => ({ kind: "image" as const, url, poster: null, alt: null, night: false, rack: null, aspect: null }));
   const active = media[activeImg] ?? media[0];
   const firstPhoto = media.find((m) => m.kind === "image" && !m.night)?.url ?? media.find((m) => m.kind === "image")?.url ?? null;
   const thumbOf = (m: (typeof media)[number]) => (m.kind === "video" ? (m.poster ?? firstPhoto) : m.url);

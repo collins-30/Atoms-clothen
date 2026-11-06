@@ -239,6 +239,11 @@ enum CardMedia {
   VIDEO
 }
 
+enum RackSide {
+  FRONT
+  BACK
+}
+
 // Photos and model videos for a product, in display order. A product with no
 // rows here falls back to its `images` list, so older products keep working.
 // `images` is still written on every save (orders, emails and payments use it).
@@ -250,6 +255,8 @@ model ProductMedia {
   posterUrl String?   @db.VarChar(1000) // still frame shown before / instead of a video
   alt       String?   @db.VarChar(300)
   night     Boolean   @default(false) // a "night shot", shown on the shop page when Night Mode is on
+  rack      RackSide? // a cut-out garment image for the clothing rail (front or back); not shown in the gallery
+  aspect    Float? // height / width of the image, so the rail can lay garments out before they load
   position  Int       @default(0)
   createdAt DateTime  @default(now())
 
