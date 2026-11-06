@@ -7,6 +7,7 @@ import { connection } from "next/server";
 import { prisma } from "@/lib/db";
 import { requireAdmin } from "@/lib/auth";
 import { colorList, strings } from "@/lib/json";
+import { resolveMedia } from "@/lib/media";
 
 // ───────────── Types the admin screens receive ─────────────
 
@@ -31,9 +32,14 @@ export type AdminProduct = {
   materials: string;
   care: string;
   images: string[];
+  /** Photos and model videos in display order (falls back to `images` for older products). */
+  media: AdminMedia[];
+  cardMedia: "IMAGE" | "VIDEO";
+  editorial: boolean;
   stock: number; // total pieces across all variants
   prices: { marketId: string; price: number; available: boolean }[];
 };
+export type AdminMedia = { kind: "IMAGE" | "VIDEO"; url: string; posterUrl: string | null; alt: string | null };
 export type AdminMarketLite = { id: string; code: string; name: string; currency: string; symbol: string; active: boolean };
 export type AdminCategoryLite = { id: string; name: string; gender: Gender; parentId: string | null };
 export type AdminVariant = { id: string; color: string; colorHex: string | null; size: string; sku: string; stock: number };
@@ -63,7 +69,11 @@ export async function getAdminProducts(): Promise<ProductsData> {
     prisma.product.findMany({
       orderBy: { createdAt: "desc" },
       take: 500,
-      include: { category: { select: { name: true } }, prices: { select: { marketId: true, price: true, available: true } } },
+      include: {
+        category: { select: { name: true } },
+        prices: { select: { marketId: true, price: true, available: true } },
+        media: { orderBy: { position: "asc" }, select: { kind: true, url: true, posterUrl: true, alt: true } },
+      },
     }),
     prisma.category.findMany({
       orderBy: [{ gender: "asc" }, { displayOrder: "asc" }, { name: "asc" }],
@@ -98,6 +108,14 @@ export async function getAdminProducts(): Promise<ProductsData> {
       materials: p.materials ?? "",
       care: p.care ?? "",
       images: strings(p.images),
+      media: resolveMedia(p.media, strings(p.images), p.videoUrl).map((m) => ({
+        kind: m.kind === "video" ? ("VIDEO" as const) : ("IMAGE" as const),
+        url: m.url,
+        posterUrl: m.poster,
+        alt: m.alt,
+      })),
+      cardMedia: p.cardMedia,
+      editorial: p.editorial,
       stock: stockBy.get(p.id) ?? 0,
       prices: p.prices.map((x) => ({ marketId: x.marketId, price: x.price.toNumber(), available: x.available })),
     })),
@@ -111,6 +129,13 @@ const imageUrl = z
   .trim()
   .max(2000)
   .refine(isAllowedImageUrl, IMAGE_LINK_ERROR);
+
+const mediaSchema = z.object({
+  kind: z.enum(["IMAGE", "VIDEO"]),
+  url: imageUrl,
+  posterUrl: imageUrl.nullable(),
+  alt: z.string().trim().max(300).nullable(),
+});
 
 const productSchema = z.object({
   id: z.string().min(1).optional(),
@@ -132,6 +157,11 @@ const productSchema = z.object({
   materials: z.string().max(5000),
   care: z.string().max(5000),
   images: z.array(imageUrl).max(20),
+  // Photos + model videos in display order. Optional so an older form that only
+  // sends `images` still saves (its photos become the media list).
+  media: z.array(mediaSchema).max(30).optional(),
+  cardMedia: z.enum(["IMAGE", "VIDEO"]).default("IMAGE"),
+  editorial: z.boolean().default(false),
   // One entry per market the product is sold in. A market left out = not sold there.
   prices: z.array(z.object({ marketId: z.string().min(1), price: z.number().min(0).max(10_000_000), available: z.boolean() })).max(50),
 });
@@ -165,6 +195,17 @@ export async function saveProduct(raw: unknown): Promise<Ok | Fail> {
     return { ok: false, error: "One of the markets no longer exists." };
   }
 
+  const media = d.media ?? d.images.map((url) => ({ kind: "IMAGE" as const, url, posterUrl: null, alt: null }));
+  const photos = media.filter((m) => m.kind === "IMAGE").map((m) => m.url);
+  const firstVideo = media.find((m) => m.kind === "VIDEO")?.url ?? null;
+  const mediaRows = media.map((m, position) => ({
+    kind: m.kind,
+    url: m.url,
+    posterUrl: m.kind === "VIDEO" ? m.posterUrl : null,
+    alt: m.alt || null,
+    position,
+  }));
+
   const base = {
     name: d.name,
     slug,
@@ -183,18 +224,29 @@ export async function saveProduct(raw: unknown): Promise<Ok | Fail> {
     colors: d.colors,
     materials: d.materials.trim() || null,
     care: d.care.trim() || null,
-    images: d.images,
+    // Orders, emails and payments read `images`, so keep it equal to the photos.
+    images: photos.slice(0, 20),
+    // The old single-video column is VARCHAR(191); only keep links that fit.
+    videoUrl: firstVideo && firstVideo.length <= 191 ? firstVideo : null,
+    cardMedia: d.cardMedia,
+    editorial: d.editorial && !!firstVideo,
   };
 
   try {
     if (!d.id) {
       await prisma.product.create({
-        data: { ...base, prices: { create: d.prices.map((p) => ({ marketId: p.marketId, price: money(p.price), available: p.available })) } },
+        data: {
+          ...base,
+          prices: { create: d.prices.map((p) => ({ marketId: p.marketId, price: money(p.price), available: p.available })) },
+          media: { create: mediaRows },
+        },
       });
     } else {
       const id = d.id;
       await prisma.$transaction([
         prisma.product.update({ where: { id }, data: base }),
+        prisma.productMedia.deleteMany({ where: { productId: id } }),
+        prisma.productMedia.createMany({ data: mediaRows.map((m) => ({ ...m, productId: id })) }),
         prisma.productPrice.deleteMany({ where: { productId: id, marketId: { notIn: marketIds } } }),
         ...d.prices.map((p) =>
           prisma.productPrice.upsert({

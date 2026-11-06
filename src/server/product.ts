@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import { colorList, strings } from "@/lib/json";
+import { resolveMedia, type StoreMedia } from "@/lib/media";
 
 export type ProductDetail = {
   product: {
@@ -13,6 +14,8 @@ export type ProductDetail = {
     categorySlug: string | null;
     categoryName: string | null;
     images: string[];
+    /** Photos and model videos in the order the admin set. */
+    media: StoreMedia[];
     colors: { name: string; hex: string }[];
     sku: string | null;
     materials: string | null;
@@ -44,6 +47,7 @@ export async function getProductDetail(slug: unknown, marketCode: unknown): Prom
     include: {
       category: { select: { slug: true, name: true } },
       variants: { select: { color: true, size: true, sku: true, stock: true } },
+      media: { orderBy: { position: "asc" }, select: { kind: true, url: true, posterUrl: true, alt: true } },
       prices: {
         where: { available: true, market: { code: marketCode, active: true } },
         select: { price: true },
@@ -77,6 +81,7 @@ export async function getProductDetail(slug: unknown, marketCode: unknown): Prom
         categorySlug: p.category?.slug ?? null,
         categoryName: p.category?.name ?? null,
         images: strings(p.images),
+        media: resolveMedia(p.media, strings(p.images), p.videoUrl),
         colors,
         sku: p.sku,
         materials: p.materials,

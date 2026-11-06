@@ -87,7 +87,10 @@ export default function ProductsView({ products, categories, markets }: Products
             const price = market ? p.prices.find((x) => x.marketId === market.id) : null;
             return (
               <div key={p.id} className="flex flex-wrap items-center gap-4 py-4">
-                <div className="w-12 h-14 shrink-0 bg-stone-100 overflow-hidden">
+                <div className="relative w-12 h-14 shrink-0 bg-stone-100 overflow-hidden">
+                  {p.media.some((m) => m.kind === "VIDEO") && (
+                    <span className="absolute bottom-0 inset-x-0 z-10 bg-foreground/80 text-background text-[8px] tracking-[0.15em] uppercase text-center leading-4">Video</span>
+                  )}
                   {p.images[0] && (
                     // eslint-disable-next-line @next/next/no-img-element
                     <img src={p.images[0]} alt={p.name} className="w-full h-full object-cover" />

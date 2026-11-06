@@ -2,6 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import type { Catalog, StoreProduct } from "@/lib/storefront-types";
+import { resolveMedia, showcaseVideo } from "@/lib/media";
 
 // Json columns come back as `unknown`; make sure we only pass on what we expect.
 const strings = (v: unknown): string[] =>
@@ -39,12 +40,16 @@ export async function getCatalog(marketCode: string): Promise<Catalog> {
       category: { select: { slug: true } },
       prices: { where: { marketId: market.id, available: true }, select: { price: true } },
       variants: { select: { stock: true } },
+      media: { orderBy: { position: "asc" }, select: { kind: true, url: true, posterUrl: true, alt: true } },
     },
   });
 
   const priceMap: Record<string, number> = {};
   const products: StoreProduct[] = rows.map((p) => {
     priceMap[p.slug] = Number(p.prices[0].price);
+    const images = strings(p.images);
+    const media = resolveMedia(p.media, images, p.videoUrl);
+    const video = showcaseVideo(media);
     return {
       id: p.id,
       slug: p.slug,
@@ -52,7 +57,11 @@ export async function getCatalog(marketCode: string): Promise<Catalog> {
       description: p.description,
       gender: p.gender.toLowerCase() as StoreProduct["gender"],
       categorySlug: p.category?.slug ?? null,
-      images: strings(p.images),
+      images,
+      media,
+      cardVideo: p.cardMedia === "VIDEO" ? video : null,
+      video,
+      editorial: p.editorial && !!video,
       colors: colorList(p.colors),
       sizes: strings(p.sizes),
       tags: strings(p.tags),

@@ -6,6 +6,7 @@ import type { ReactNode } from "react";
 import { ArrowRight } from "lucide-react";
 import { useCatalog } from "@/lib/use-catalog";
 import ProductCard from "@/components/storefront/ProductCard";
+import EditorialVideos from "@/components/storefront/EditorialVideos";
 import type { StoreBanner } from "@/lib/storefront-types";
 
 // These two used to be Base44 CDN links. Save them into public/images/ with
@@ -40,6 +41,7 @@ export default function HomeView({ banners }: { banners: StoreBanner[] }) {
   const trending = products.filter((p) => p.isTrending).slice(0, 4);
   const bestsellers = products.filter((p) => p.isBestseller).slice(0, 4);
   const featured = products.filter((p) => p.featured).slice(0, 4);
+  const editorial = products.filter((p) => p.editorial && p.video);
 
   const cards = (list: typeof products) =>
     list.map((p) => <ProductCard key={p.id} product={p} priceMap={priceMap} market={market} />);
@@ -79,6 +81,9 @@ export default function HomeView({ banners }: { banners: StoreBanner[] }) {
           </div>
         </Section>
       )}
+
+      {/* Editorial model videos (products ticked "Feature … editorial section" in the admin) */}
+      {!loading && <EditorialVideos products={editorial} priceMap={priceMap} market={market} />}
 
       {/* Promotional banner */}
       <section className="relative h-[60vh] overflow-hidden">

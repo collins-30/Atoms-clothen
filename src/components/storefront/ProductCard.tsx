@@ -6,6 +6,7 @@ import { Heart } from "lucide-react";
 import { useStore } from "@/lib/store-context";
 import { formatPrice, type PriceMarket } from "@/lib/format";
 import type { StoreProduct } from "@/lib/storefront-types";
+import ProductVideo from "@/components/storefront/ProductVideo";
 
 type Props = {
   product: StoreProduct;
@@ -23,14 +24,24 @@ export default function ProductCard({ product, priceMap, market }: Props) {
     <div className="group relative">
       <Link href={`/product/${product.slug}`} className="block">
         <div className="relative aspect-[3/4] overflow-hidden bg-stone-100">
-          {img && (
-            <Image
-              src={img}
+          {product.cardVideo ? (
+            // A real model video of this product (set in admin › Products › Shop card shows).
+            <ProductVideo
+              src={product.cardVideo.src}
+              poster={product.cardVideo.poster ?? img ?? null}
               alt={product.name}
-              fill
               sizes="(min-width: 1024px) 25vw, 50vw"
-              className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
             />
+          ) : (
+            img && (
+              <Image
+                src={img}
+                alt={product.name}
+                fill
+                sizes="(min-width: 1024px) 25vw, 50vw"
+                className="object-cover transition-transform duration-1000 ease-out group-hover:scale-105"
+              />
+            )
           )}
           <div className="absolute inset-0 bg-black/0 group-hover:bg-black/5 transition-colors duration-500" />
           {product.isNew && (

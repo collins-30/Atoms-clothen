@@ -1,12 +1,12 @@
 "use client";
 
 import { useState } from "react";
-import { Loader2, Plus } from "lucide-react";
+import { Loader2 } from "lucide-react";
 import type { Gender, ProductStatus } from "@prisma/client";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
 import { ghostBtn, inputCls, labelCls, primaryBtn } from "@/components/admin/AdminUi";
-import ImageUploadButton from "@/components/admin/ImageUploadButton";
-import { saveProduct, type AdminCategoryLite, type AdminMarketLite, type AdminProduct } from "@/server/admin-products";
+import ProductMediaManager from "@/components/admin/ProductMediaManager";
+import { saveProduct, type AdminCategoryLite, type AdminMarketLite, type AdminMedia, type AdminProduct } from "@/server/admin-products";
 
 const GENDERS: Gender[] = ["WOMEN", "MEN", "UNISEX"];
 const STATUSES: ProductStatus[] = ["PUBLISHED", "DRAFT", "ARCHIVED"];
@@ -61,8 +61,9 @@ export default function ProductFormDialog({
     isTrending: product?.isTrending ?? false,
     featured: product?.featured ?? false,
   }));
-  const [images, setImages] = useState<string[]>(product?.images ?? []);
-  const [imgUrl, setImgUrl] = useState("");
+  const [media, setMedia] = useState<AdminMedia[]>(product?.media ?? []);
+  const [cardMedia, setCardMedia] = useState<"IMAGE" | "VIDEO">(product?.cardMedia ?? "IMAGE");
+  const [editorial, setEditorial] = useState(product?.editorial ?? false);
   const [prices, setPrices] = useState<Record<string, PriceCell>>(() => {
     const out: Record<string, PriceCell> = {};
     for (const m of markets) {
@@ -76,18 +77,6 @@ export default function ProductFormDialog({
 
   const set = <K extends keyof typeof form>(key: K, value: (typeof form)[K]) => setForm((f) => ({ ...f, [key]: value }));
   const setPrice = (marketId: string, patch: Partial<PriceCell>) => setPrices((p) => ({ ...p, [marketId]: { ...p[marketId], ...patch } }));
-
-  const addImage = () => {
-    const v = imgUrl.trim();
-    if (!v) return;
-    if (!(v.startsWith("/") && !v.startsWith("//")) && !v.startsWith("https://")) {
-      setError("Image links must start with / (a file in your public folder) or https://");
-      return;
-    }
-    setError("");
-    setImages((imgs) => [...imgs, v]);
-    setImgUrl("");
-  };
 
   const save = async () => {
     if (!form.name.trim()) {
@@ -116,7 +105,10 @@ export default function ProductFormDialog({
         colors: parseColors(form.colors),
         materials: form.materials,
         care: form.care,
-        images,
+        images: media.filter((m) => m.kind === "IMAGE").map((m) => m.url).slice(0, 20),
+        media,
+        cardMedia: media.some((m) => m.kind === "VIDEO") ? cardMedia : "IMAGE",
+        editorial: editorial && media.some((m) => m.kind === "VIDEO"),
         // a blank price = "not sold in this market"
         prices: markets
           .filter((m) => prices[m.id]?.price.trim() !== "")
@@ -218,42 +210,14 @@ export default function ProductFormDialog({
             </div>
           </div>
 
-          <div>
-            <p className={labelCls}>Images</p>
-            <div className="flex flex-wrap gap-3">
-              {images.map((src, i) => (
-                <div key={`${src}-${i}`} className="relative w-16 h-20 border border-stone-200 bg-stone-100 group">
-                  {/* eslint-disable-next-line @next/next/no-img-element */}
-                  <img src={src} alt="" className="w-full h-full object-cover" />
-                  <button
-                    type="button"
-                    onClick={() => setImages(images.filter((_, j) => j !== i))}
-                    className="absolute inset-0 bg-black/60 text-white text-[10px] uppercase opacity-0 group-hover:opacity-100 focus:opacity-100 transition-opacity"
-                  >
-                    Remove
-                  </button>
-                </div>
-              ))}
-              {images.length === 0 && <p className="text-xs text-stone-400">No images yet.</p>}
-            </div>
-            <div className="flex gap-2 mt-2">
-              <input
-                value={imgUrl}
-                onChange={(e) => setImgUrl(e.target.value)}
-                onKeyDown={(e) => { if (e.key === "Enter") { e.preventDefault(); addImage(); } }}
-                placeholder="Paste an image link, or a path like /products/dress.jpg"
-                aria-label="Image link"
-                className={inputCls}
-              />
-              <button type="button" onClick={addImage} className="h-10 px-4 border border-stone-300 text-xs tracking-[0.1em] uppercase hover:border-foreground inline-flex items-center gap-1">
-                <Plus className="w-3.5 h-3.5" /> Add
-              </button>
-            </div>
-            <div className="mt-2">
-              <ImageUploadButton folder="products" multiple label="Upload images" onUploaded={(url) => setImages((imgs) => [...imgs, url])} />
-            </div>
-            <p className="text-xs text-stone-400 mt-1.5">The first image is the main one. Upload files, or paste a link or a path like /products/dress.jpg.</p>
-          </div>
+          <ProductMediaManager
+            media={media}
+            onChange={setMedia}
+            cardMedia={cardMedia}
+            onCardMedia={setCardMedia}
+            editorial={editorial}
+            onEditorial={setEditorial}
+          />
 
           <div>
             <p className={labelCls}>Prices by market</p>

@@ -3,9 +3,11 @@
 import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import Image from "next/image";
+import ProductVideo from "@/components/storefront/ProductVideo";
 import {
   Heart,
   Minus,
+  Play,
   Plus,
   RefreshCw,
   ShieldCheck,
@@ -155,7 +157,10 @@ export default function ProductDetailView({ slug }: { slug: string }) {
   };
 
   const wished = isWished(product.slug);
-  const mainImg = product.images[activeImg] ?? product.images[0];
+  const media = product.media.length > 0 ? product.media : product.images.map((url) => ({ kind: "image" as const, url, poster: null, alt: null }));
+  const active = media[activeImg] ?? media[0];
+  const firstPhoto = media.find((m) => m.kind === "image")?.url ?? null;
+  const thumbOf = (m: (typeof media)[number]) => (m.kind === "video" ? (m.poster ?? firstPhoto) : m.url);
 
   return (
     <div>
@@ -185,45 +190,53 @@ export default function ProductDetailView({ slug }: { slug: string }) {
         </nav>
 
         <div className="grid md:grid-cols-2 gap-8 lg:gap-16">
-          {/* Gallery */}
-          <div className="flex gap-4">
-            {product.images.length > 1 && (
-              <div className="hidden md:flex flex-col gap-3 w-20">
-                {product.images.map((img, i) => (
-                  <button
-                    key={img}
-                    onClick={() => setActiveImg(i)}
-                    className={`relative aspect-[3/4] overflow-hidden border ${
-                      activeImg === i
-                        ? "border-foreground"
-                        : "border-transparent"
-                    }`}
-                    aria-label={`Show image ${i + 1}`}
-                  >
+          {/* Gallery: photos and model videos, in the order set in the admin */}
+          <div>
+            <div className="flex gap-4">
+              {media.length > 1 && (
+                <div className="hidden md:flex flex-col gap-3 w-20">
+                  {media.map((m, i) => (
+                    <MediaThumb key={`${m.url}-${i}`} src={thumbOf(m)} video={m.kind === "video"} active={activeImg === i} label={`${product.name} ${m.kind === "video" ? "video" : "image"} ${i + 1}`} onClick={() => setActiveImg(i)} />
+                  ))}
+                </div>
+              )}
+
+              <div className="relative flex-1 aspect-[3/4] bg-stone-100 overflow-hidden">
+                {active?.kind === "video" ? (
+                  <ProductVideo
+                    key={active.url}
+                    src={active.url}
+                    poster={active.poster ?? firstPhoto}
+                    alt={active.alt || `${product.name} on a model`}
+                    sizes="(min-width: 768px) 45vw, 100vw"
+                    priority={activeImg === 0}
+                    controls
+                    weight={1}
+                  />
+                ) : (
+                  active && (
                     <Image
-                      src={img}
-                      alt={`${product.name} ${i + 1}`}
+                      src={active.url}
+                      alt={active.alt || product.name}
                       fill
-                      sizes="80px"
+                      priority
+                      sizes="(min-width: 768px) 45vw, 100vw"
                       className="object-cover"
                     />
-                  </button>
+                  )
+                )}
+              </div>
+            </div>
+
+            {media.length > 1 && (
+              <div className="md:hidden mt-3 flex gap-2 overflow-x-auto pb-1">
+                {media.map((m, i) => (
+                  <div key={`${m.url}-${i}`} className="w-16 shrink-0">
+                    <MediaThumb src={thumbOf(m)} video={m.kind === "video"} active={activeImg === i} label={`${product.name} ${m.kind === "video" ? "video" : "image"} ${i + 1}`} onClick={() => setActiveImg(i)} />
+                  </div>
                 ))}
               </div>
             )}
-
-            <div className="relative flex-1 aspect-[3/4] bg-stone-100 overflow-hidden">
-              {mainImg && (
-                <Image
-                  src={mainImg}
-                  alt={product.name}
-                  fill
-                  priority
-                  sizes="(min-width: 768px) 45vw, 100vw"
-                  className="object-cover"
-                />
-              )}
-            </div>
           </div>
 
           {/* Product configuration */}
@@ -491,5 +504,26 @@ export default function ProductDetailView({ slug }: { slug: string }) {
         </section>
       )}
     </div>
+  );
+}
+
+function MediaThumb({ src, video, active, label, onClick }: { src: string | null; video: boolean; active: boolean; label: string; onClick: () => void }) {
+  return (
+    <button
+      type="button"
+      onClick={onClick}
+      className={`relative block w-full aspect-[3/4] overflow-hidden border bg-stone-200 ${active ? "border-foreground" : "border-transparent"}`}
+      aria-label={`Show ${label}`}
+      aria-pressed={active}
+    >
+      {src && <Image src={src} alt="" fill sizes="80px" className="object-cover" />}
+      {video && (
+        <span className="absolute inset-0 flex items-center justify-center bg-black/15">
+          <span className="w-7 h-7 rounded-full bg-background/90 flex items-center justify-center">
+            <Play className="w-3 h-3 translate-x-px" strokeWidth={1.8} />
+          </span>
+        </span>
+      )}
+    </button>
   );
 }

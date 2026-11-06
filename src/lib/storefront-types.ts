@@ -1,6 +1,8 @@
 // Plain, JSON-safe shapes sent from the server to storefront components.
 // (No Prisma types here: Decimal and Date can't cross to client components.)
 
+import type { StoreMedia, VideoSource } from "@/lib/media";
+
 export type StoreProduct = {
   id: string;
   slug: string;
@@ -9,6 +11,14 @@ export type StoreProduct = {
   gender: "men" | "women" | "unisex"; // lowercase so it matches ?gender=women in URLs
   categorySlug: string | null;
   images: string[];
+  /** Photos and model videos in display order. */
+  media: StoreMedia[];
+  /** Set when the admin chose "model video" for the card and the product has one. */
+  cardVideo: VideoSource | null;
+  /** The first model video (for the editorial section), or null. */
+  video: VideoSource | null;
+  /** Show in the large editorial video section on the home page. */
+  editorial: boolean;
   colors: { name: string; hex: string }[];
   sizes: string[];
   tags: string[];

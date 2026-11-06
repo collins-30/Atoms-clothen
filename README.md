@@ -1,3 +1,55 @@
+# JAMAS store
+
+## Model videos (moving product cards and editorial videos)
+
+Product cards, the product page and the home page's editorial section can show
+**real video of a model wearing the product**: walking, turning, posing. The
+store never fakes this with zoom or slide effects on photos. A product without
+a model video simply shows its photos.
+
+### What to film for each product
+
+- 3–8 second clip of a model **wearing that exact item**: a walk towards the
+  camera, a slow turn to show the back, a pose with some arm movement.
+- Portrait framing (3:4 or 9:16), clean background, steady camera.
+- Start and end in a similar pose so the loop is smooth.
+- No sound is needed (videos always play muted).
+- One clip per product to start; add more later as alternate videos.
+
+### Prepare and upload
+
+1. Compress the clip (needs [ffmpeg](https://ffmpeg.org/download.html)):
+   `./scripts/optimize-video.sh my-clip.mov 6`
+   This makes `my-clip-web.mp4` (silent H.264 MP4, max 1280 px, starts playing
+   before it fully downloads) and `my-clip-poster.jpg`. Aim for under ~6 MB.
+2. Admin › Products › edit the product › **Upload model video**. A poster frame
+   is taken from the clip automatically ("Set poster" replaces it).
+3. Use the arrows to set the display order of photos and videos.
+4. **Shop card shows → Model video** to play it in the shop grid.
+5. Tick **Feature this model video in the large editorial section** to show it
+   full-width on the home page.
+
+Uploads go to the same Cloudflare R2 bucket as photos (`products/videos/`).
+MP4 and WebM are accepted, up to 60 MB; iPhone `.mov` files must be exported
+as MP4 first (the script does this).
+
+### How they play
+
+Videos are muted, looped and inline (`playsInline`), load only when they come
+near the screen, pause when scrolled away or when the tab is hidden, and only
+the most visible few play at once (4 on desktop, 2 on phones). Visitors who
+ask for reduced motion or use data saver see the poster instead. If a browser
+blocks autoplay, the poster stays.
+
+### Database
+
+Migration `20261106090000_product_media` only adds a `ProductMedia` table and
+two columns with defaults (`cardMedia`, `editorial`). Existing products keep
+working unchanged: until a product is saved again, its media comes from its
+`images` list. Run `npx prisma migrate deploy` on the production database.
+
+---
+
 This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
 
 ## Getting Started
