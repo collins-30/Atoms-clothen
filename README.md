@@ -1,5 +1,7 @@
 # JAMAS store
 
+Going live: see [DEPLOY.md](DEPLOY.md). All settings are listed in `.env.example`.
+
 ## Model videos (moving product cards and editorial videos)
 
 Product cards, the product page and the home page's editorial section can show
