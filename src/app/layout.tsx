@@ -8,9 +8,26 @@ const syne = Syne({ subsets: ["latin"], weight: ["600", "700", "800"], variable:
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter", display: "swap" });
 const jetbrains = JetBrains_Mono({ subsets: ["latin"], weight: ["400", "500"], variable: "--font-jetbrains", display: "swap" });
 
+// Absolute base for canonical and social-preview URLs. Falls back to localhost
+// so a missing variable never crashes the build.
+const siteUrl = (() => {
+  try {
+    return new URL(process.env.NEXT_PUBLIC_APP_URL || "http://localhost:3000");
+  } catch {
+    return new URL("http://localhost:3000");
+  }
+})();
+
 export const metadata: Metadata = {
+  metadataBase: siteUrl,
   title: { default: "JAMAS", template: "%s | JAMAS" },
   description: "Considered clothing, made to last.",
+  openGraph: {
+    type: "website",
+    siteName: "JAMAS",
+    title: "JAMAS",
+    description: "Considered clothing, made to last.",
+  },
 };
 
 export default function RootLayout({ children }: { children: ReactNode }) {

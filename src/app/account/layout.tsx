@@ -1,4 +1,5 @@
 import { Suspense, type ReactNode } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { connection } from "next/server";
@@ -8,6 +9,8 @@ import AccountTabs from "@/components/account/AccountTabs";
 import ThemeStyle from "@/components/ThemeStyle";
 import { getActiveTheme } from "@/server/theme";
 import { displayNameFor } from "@/server/account-data";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 // Account pages need a signed-in customer. (Each account query must also filter
 // by the signed-in user's id; this layout only decides who gets to see the page.)

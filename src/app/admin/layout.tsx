@@ -1,4 +1,5 @@
 import { Suspense, type ReactNode } from "react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound, redirect } from "next/navigation";
 import { connection } from "next/server";
@@ -8,6 +9,8 @@ import { prisma } from "@/lib/db";
 import AdminNav from "@/components/admin/AdminNav";
 import ThemeStyle from "@/components/ThemeStyle";
 import { getActiveTheme } from "@/server/theme";
+
+export const metadata: Metadata = { robots: { index: false, follow: false } };
 
 // The real admin gate. The role is read from the DATABASE on every request,
 // so demoting an admin takes effect immediately (the cookie can be stale).

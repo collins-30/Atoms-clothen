@@ -7,15 +7,18 @@
     "build": "next build",
     "start": "next start",
     "lint": "eslint",
-    "postinstall": "prisma generate"
+    "postinstall": "prisma generate",
+    "db:deploy": "prisma migrate deploy",
+    "admin:make": "tsx --env-file=.env scripts/make-admin.ts",
+    "db:clean-test": "tsx --env-file=.env scripts/clean-test-data.ts"
   },
   "prisma": {
     "seed": "tsx prisma/seed.ts"
   },
   "dependencies": {
     "@auth/prisma-adapter": "^2.11.3",
-    "@aws-sdk/client-s3": "^3.1160.0",
-    "@aws-sdk/s3-request-presigner": "^3.1160.0",
+    "@aws-sdk/client-s3": "^3.1164.0",
+    "@aws-sdk/s3-request-presigner": "^3.1164.0",
     "@base-ui/react": "^1.9.0",
     "@hookform/resolvers": "^5.9.2",
     "@prisma/client": "^6.19.3",

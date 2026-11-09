@@ -44,7 +44,7 @@ export default function HelpPage() {
       <section id="contact" className="mt-14 scroll-mt-28">
         <h2 className="text-xl font-semibold tracking-wide" style={{ fontFamily: "var(--font-heading)" }}>Contact</h2>
         <div className="mt-5 space-y-4 text-sm text-muted-foreground">
-          <a href="mailto:izmacg4455@gmail.com" className="flex items-center gap-3 hover:text-foreground"><Mail className="w-4 h-4" /> izmac4455@gmail.com</a>
+          <a href="mailto:izmacg4455@gmail.com" className="flex items-center gap-3 hover:text-foreground"><Mail className="w-4 h-4" /> izmacg4455@gmail.com</a>
           <a href="https://instagram.com/atomicwithfriends" target="_blank" rel="noreferrer" className="flex items-center gap-3 hover:text-foreground"><MessageCircle className="w-4 h-4" /> Message us on Instagram (@atomicwithfriends)</a>
         </div>
         <p className="mt-4 text-sm text-muted-foreground">Our team replies within one business day, Monday to Friday.</p>
